@@ -1,0 +1,108 @@
+
+\usepackage{epsfig}
+
+\makeatletter
+
+\setlength{\hoffset}{-1in}
+\setlength{\voffset}{-1in}
+\setlength{\oddsidemargin}{2.5cm}   % marges interieure
+\setlength{\evensidemargin}{2.5cm}  % marges exterieure
+\setlength{\topmargin}{1.0cm}       % marge superieure de 2.5 cm
+\setlength{\headheight}{0.5cm}
+\setlength{\headsep}{1.0cm}
+\setlength{\footskip}{\headheight}  % marge inferieure
+\addtolength{\footskip}{\headsep}
+\setlength{\marginparwidth}{2.0cm}  % marge utilisable
+\setlength{\marginparsep}{1mm}
+\reversemarginpar                   % marge utilisable a l'interieur
+
+\setlength{\paperwidth}{21cm}
+\setlength{\paperheight}{29.7cm}
+\setlength{\textheight}{\paperheight}
+\addtolength{\textheight}{-2\topmargin}
+\addtolength{\textheight}{-2\footskip}
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-\oddsidemargin}
+\addtolength{\textwidth}{-\evensidemargin}
+
+\setlength{\parskip}{\baselineskip}
+\setlength{\parindent}{0pt}
+
+\renewcommand\section{\@startsection{section}{1}{0pt}%
+                                    {-0.1pt}
+                                    {0.1pt}
+                                    {\Large\bfseries\sffamily}}
+
+\renewcommand\subsection{\@startsection{subsection}{2}{0pt}%
+                                       {-0.1pt}
+                                       {0.1pt}
+                                       {\large\bfseries\sffamily}}
+
+\newcommand{\head}[1]
+           {\rule[1em]{\textwidth}{1pt} \\[-3mm]
+            \centerline{\LARGE\textbf{\textsf{%
+                        L3IUP Informatique--- UBO}}} \\[1mm]
+            \centerline{\large\textbf{\textsf{%
+                        Projet ``Jeux Interactifs'' en langage C}}} \\[1mm]
+            \centerline{\Large\textsf{\textsl{#1}}} \\[-3mm]
+            \rule{\textwidth}{1pt}
+            \vspace*{-5mm}}
+
+\newcommand{\foot}{\vspace*{\stretch{1}}\rule{\textwidth}{1pt}}
+
+\newcommand{\numero}{n$^{\sf o}$}
+
+%---------------- Listes ----------------
+\renewcommand{\labelitemi}{\textbf{$\triangleright$}}
+\renewcommand{\labelitemii}{\textbf{$\diamond$}}
+\renewcommand{\labelitemiii}{\textbf{$\circ$}}
+\renewcommand{\labelitemiv}{\textbf{$\cdot$}}
+
+\renewcommand{\theenumi}{\arabic{enumi}}
+  \renewcommand{\labelenumi}{\textbf{\theenumi.}}
+\renewcommand{\theenumii}{\alph{enumii}}
+  \renewcommand{\labelenumii}{\textbf{(\theenumii)}}
+\renewcommand{\theenumiii}{\roman{enumiii}}
+  \renewcommand{\labelenumiii}{\textbf{\theenumiii.}}
+\renewcommand{\theenumiv}{\alph{enumiv}}
+  \renewcommand{\labelenumiv}{\textbf{\itshape\theenumiv.}}
+
+\newcommand{\listspaces}{\setlength{\topsep}{-0.75\parskip}
+                         \setlength{\partopsep}{0.5\parskip}
+                         \setlength{\parsep}{0pt}
+                         \setlength{\itemsep}{1pt}}
+\def\itemstart{\samepage}
+\def\item{%
+  \itemstart\@inmatherr\item
+  \@ifnextchar [\@item{\@noitemargtrue \@item[\@itemlabel]}}
+\def\enumerate{%
+  \ifnum \@enumdepth >\thr@@\@toodeep\else
+    \advance\@enumdepth\@ne
+    \edef\@enumctr{enum\romannumeral\the\@enumdepth}%
+      \expandafter
+      \list
+        {\csname label\@enumctr\endcsname}
+        {\listspaces\usecounter\@enumctr\def\makelabel##1{\hss\llap{##1}}}%
+  \fi}
+\def\itemize{%
+  \ifnum \@itemdepth >\thr@@\@toodeep\else
+    \advance\@itemdepth\@ne
+    \edef\@itemitem{labelitem\romannumeral\the\@itemdepth}%
+    \expandafter
+    \list
+      \csname\@itemitem\endcsname
+      {\listspaces\def\makelabel##1{\hss\llap{##1}}}%
+  \fi}
+\renewenvironment{description}
+                 {\list{}{\listspaces\labelwidth\z@ \itemindent-\leftmargin
+                          \let\makelabel\descriptionlabel}}
+                 {\endlist}
+\def\bibliography#1{%
+  \def\itemstart{}
+  \if@filesw
+    \immediate\write\@auxout{\string\bibdata{#1}}%
+  \fi
+  \@input@{\jobname.bbl}}
+
+\makeatother
+

@@ -1,0 +1,13 @@
+1)
+
+/* op.cpp : g++ -E op.cpp
+
+ #define NEW_A(...) new A(__VA_ARGS__)
+
+
+int main(void)
+{
+ NEW_A(a,b,c);
+ return 0;
+}
+*/

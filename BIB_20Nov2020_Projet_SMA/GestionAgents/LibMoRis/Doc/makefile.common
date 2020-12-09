@@ -1,0 +1,34 @@
+
+PRINT_V=dvips -q -t a4 -o $(FILE).ps $(FILE).dvi
+PRINT_H=dvips -q -t a4 -t landscape -o $(FILE).ps $(FILE).dvi
+
+VIEW_H=xdvi -paper a4r $(FILE).dvi &
+VIEW_V=xdvi -paper a4 $(FILE).dvi &
+
+all : $(FILE).pdf
+
+$(FILE).dvi : $(FILE).tex $(FILES) macros.tex
+	latex $(FILE).tex ; \
+	while grep "Rerun" $(FILE).log ; do \
+          latex $(FILE).tex ; \
+        done
+
+view : $(FILE).dvi
+	$(VIEW_V)
+
+print $(FILE).ps : $(FILE).dvi
+	$(PRINT_V)
+
+pdf $(FILE).pdf : $(FILE).dvi
+	dvipdfm -p a4 -o $(FILE).pdf $(FILE).dvi
+
+small : $(FILE).ps
+	psnup -2 $(FILE).ps small.ps
+
+touch :
+	touch *.tex
+
+clean :
+	@rm -f *.dvi *.log *.aux *.lof *.lot *.toc \
+               Img/*.bak $(FILE).pdf $(FILE).ps small.ps
+

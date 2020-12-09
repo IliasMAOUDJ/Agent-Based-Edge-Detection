@@ -1,0 +1,20 @@
+Voici un systeme de gestion d'agents.
+
+A faire pour generer "LibMoRis/lib/libAgent.a"
+une librairie contenant la bibliotheque de
+gestion d'agents.
+
+1) cd LibMoris/src
+2) make
+3) cd ../..
+
+A faire pour generer des executables pour
+les exemples d'application:
+
+4) cd Exemples
+5) cd _choisir_un_repertoire_d_exemple
+6) make
+
+Et executer l'application:
+
+7) ./ex

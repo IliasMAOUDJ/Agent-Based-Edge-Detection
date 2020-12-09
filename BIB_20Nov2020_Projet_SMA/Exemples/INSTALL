@@ -1,0 +1,33 @@
+#!/bin/sh
+
+if test $# -ne 0
+then if test $1 = "-h" -o  $1 = "-help" -o $1 = "--h" -o $1 = "--help"
+     then echo "$0 [-no] [-h|-help]"
+          exit
+     fi
+fi
+
+liste="ExempleImageAgents"
+
+clean=""
+
+if test $# -ne 0
+then if test $1 = "-no"
+     then clean=clean
+     fi
+fi
+
+for i in $liste
+do
+echo "-----------------------------------------"
+echo INSTALL $1 $i
+
+cd $i
+if test -f INSTALL
+then ./INSTALL $*
+else make $clean
+fi
+cd ..
+
+echo "-----------------------------------------"
+done

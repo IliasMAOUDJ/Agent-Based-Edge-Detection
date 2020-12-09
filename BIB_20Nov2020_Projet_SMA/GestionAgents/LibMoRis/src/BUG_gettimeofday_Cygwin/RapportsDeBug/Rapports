@@ -1,0 +1,190 @@
+voir http://cygwin.com/ml/cygwin/
+
+Et chercher gettimeofday ...
+
+
+////////////////////////////////////////////////////////////////////
+This is the mail archive of the cygwin mailing list for the Cygwin project. 
+
+
+--------------------------------------------------------------------------------
+Index Nav: [Date Index] [Subject Index] [Author Index] [Thread Index]  
+Message Nav: [Date Prev] [Date Next] [Thread Prev] [Thread Next] 
+Other format: [Raw text] 
+
+Re: milliseconds on Windows
+From: Brian Ford <Brian dot Ford at FlightSafety dot com> 
+To: Marcell Missura <missura at cs dot uni-bonn dot de> 
+Cc: cygwin at cygwin dot com 
+Date: Tue, 23 Oct 2007 10:28:48 -0500 
+Subject: Re: milliseconds on Windows 
+References: <38624.131.220.7.1.1193151578.squirrel@webmail.iai.uni-bonn.de> 
+Reply-to: cygwin at cygwin dot com 
+
+--------------------------------------------------------------------------------
+
+On Tue, 23 Oct 2007, Marcell Missura wrote:
+
+> Hello Brian,
+
+http://cygwin.com/acronyms/#PPIOSPE
+
+I've redirected this message and set the Reply-To appropriately.
+
+> I'm a student at Bonn university and I'm researching robotics. I'm trying
+> to write a robot controller for Windows XP (wasn't my choice!) and
+> measuring elapsed time down to milliseconds precision is crucial. Do you
+> happen to remember this discussion on the cygwin mailing list?
+>
+> On Mon, 12 Feb 2007, Carlo Florendo wrote:
+>
+> <snip>
+>
+> Re: strange bug in gettimeofday function
+>
+> > Windows could be accurate up to 15 ms or perhaps a little bit more.
+> > However, it is very difficult to achieve less than 15 ms or microsecond
+> > accuracy with windows due to the limitation on the OS itself.  Our
+> > extensive tests on windows clocks and timers reveal that windows cannot
+> > be accurate to the microsecond level or below 15 ms.
+> >
+> > In any case, in my experience, windows cannot be accurate with a
+> > precision of up to 15 milliseconds.
+>
+> I'm sorry, could you repeat that value one more time, just in case someone
+> missed it ;-).
+>
+> Anyway, I don't think it is relevant to the original thread's question,
+> but I can assure you that Windows can be used for accurate timings in down
+> to 1 or 2 ms (depending on the OS version).
+>
+> </snip>
+>
+> I'm experiencing pretty much the same thing as this guy. I'm using
+> gettimeofday() to construct a timestamp and ran a test just like this:
+>
+
+Maybe try the solution I gave "this guy" (Carlo Florendo) on the cygwin
+list?
+
+> double timestamp;
+> struct timeval tv;
+>
+> while(1)
+> {
+>  gettimeofday(&tv, NULL);
+>  timestamp = tv.tv_sec + (double)tv.tv_usec/1000000;
+>  printf("%f\n", timestamp);
+> }
+>
+> Output:
+>
+> 1193149915.220881
+> ... many times ...
+> 1193149915.220881
+> 1193149915.230881
+> ... many times ...
+> 1193149915.240881
+>
+> and so on. The timestamp changes every 10 ms.
+>
+> So if you know how to measure 1ms (less would be even better) on Win XP,
+> can you please tell me how to do that?
+
+http://cygwin.com/ml/cygwin/2007-02/msg00740.html
+
+-- 
+Brian Ford
+Lead Realtime Software Engineer
+VITAL - Visual Simulation Systems
+FlightSafety International
+the best safety device in any aircraft is a well-trained crew...
+
+--
+Unsubscribe info:      http://cygwin.com/ml/#unsubscribe-simple
+Problem reports:       http://cygwin.com/problems.html
+Documentation:         http://cygwin.com/docs.html
+FAQ:                   http://cygwin.com/faq/
+
+
+
+--------------------------------------------------------------------------------
+
+Follow-Ups: 
+RE: milliseconds on Windows 
+From: Robert D. Holtz - Lists
+Index Nav: [Date Index] [Subject Index] [Author Index] [Thread Index]  
+Message Nav: [Date Prev] [Date Next] [Thread Prev] [Thread Next] 
+
+/////////////////////////////////////////////////////////////////////////
+
+This is the mail archive of the cygwin mailing list for the Cygwin project. 
+
+
+--------------------------------------------------------------------------------
+Index Nav: [Date Index] [Subject Index] [Author Index] [Thread Index]  
+Message Nav: [Date Prev] [Date Next] [Thread Prev] [Thread Next] 
+Other format: [Raw text] 
+
+Re: milliseconds on Windows
+From: Tim Prince <tprince at computer dot org> 
+To: cygwin at cygwin dot com 
+Date: Tue, 23 Oct 2007 18:09:21 -0700 
+Subject: Re: milliseconds on Windows 
+References: <38624.131.220.7.1.1193151578.squirrel@webmail.iai.uni-bonn.de> <Pine.CYG.4.58.0710231015060.3388@PC1163-8460-XP.flightsafety.com> <000201c81593$045ae260$02fea8c0@DDZG9K91> 
+
+--------------------------------------------------------------------------------
+
+Robert D. Holtz - Lists wrote:
+>> Hello Brian,
+> 
+> http://cygwin.com/acronyms/#PPIOSPE
+> 
+> I've redirected this message and set the Reply-To appropriately.
+> 
+>> I'm a student at Bonn university and I'm researching robotics. I'm trying
+>> to write a robot controller for Windows XP (wasn't my choice!) and
+>> measuring elapsed time down to milliseconds precision is crucial. Do you
+>> happen to remember this discussion on the cygwin mailing list?
+>>
+
+>> So if you know how to measure 1ms (less would be even better) on Win XP,
+>> can you please tell me how to do that?
+> 
+> If you're feeling frisky it's also possible to write a low level routine
+> that hooks the hardware clock and uses it for retrieving the time.
+> 
+> This clock does go down to microsecond granularity.
+> 
+As gcc hasn't implemented the Microsoft style __rdtsc() intrinsic, we
+use routinely the usual gcc 32-bit-only stuff:
+
+unsigned long long int rdtsc( )
+{
+   long long a;
+   asm volatile("rdtsc":"=A" (a));
+   return a;
+}
+
+which gives you a number of CPU clock ticks (on current platforms,
+typically derived from the buss clock and nominal CPU clock speed ratio).
+
+--
+Unsubscribe info:      http://cygwin.com/ml/#unsubscribe-simple
+Problem reports:       http://cygwin.com/problems.html
+Documentation:         http://cygwin.com/docs.html
+FAQ:                   http://cygwin.com/faq/
+
+
+
+--------------------------------------------------------------------------------
+
+References: 
+Re: milliseconds on Windows 
+From: Brian Ford
+RE: milliseconds on Windows 
+From: Robert D. Holtz - Lists
+Index Nav: [Date Index] [Subject Index] [Author Index] [Thread Index]  
+Message Nav: [Date Prev] [Date Next] [Thread Prev] [Thread Next] 
+
+

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+change()
+{
+
+for i in `ls`
+do
+
+if [[ -d $i ]]
+then 
+     chmod 755 $i
+     cd $i
+     change
+     cd ..
+else
+     if [[ $i == "INSTALL" || $i == `basename $0` ]]
+     then chmod 544 $i
+     else chmod 644 $i
+     fi
+fi
+
+done
+
+}
+
+change
