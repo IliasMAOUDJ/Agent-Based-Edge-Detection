@@ -2,13 +2,13 @@
 
 #include <vector>
 
-#define NBAGENTS 1000
+#define NBAGENTS 2000
 
 using namespace std;
 
 #include "LibImages.h"
 #include "MAS.h"
-#include "Edge_detection.h"
+#include "FilterAgent.h"
 #include "system.h"
 #include "ImAgent.h"
 
@@ -28,9 +28,9 @@ int main(void)
 
 //--
 
-  originale.loadImage("Images/lena.ras");
+  originale.loadImage("Images/Medic.ppm");
   im = originale;
-  resultat.setImageSize(originale.getNbRow(),originale.getNbCol());
+  resultat.setImageSize(im.getNbRow(),im.getNbCol());
 /**/
 //--
 
@@ -45,7 +45,11 @@ int main(void)
 
 //--
 
-  for (int i = 0; i < NBAGENTS; i++) { new ImAgent(&sys); new Edge_detection_Agent(&sys); }
+  for (int i = 0; i < NBAGENTS; i++) 
+  { 
+    //new ImAgent(&sys); 
+    new FilterAgent(&sys); 
+  }
 
 //--
 
@@ -75,16 +79,16 @@ int main(void)
      // "Affichage" dans im de tous les "ImAgent"
 
      vector<Agent*> v;
-     getAllAgents("Edge_detection_Agent",v);
-
+     getAllAgents("Agents",v);
+    /*
      size_t nbImAgents = v.size();
+     
      for(size_t indV=0; indV < nbImAgents ; indV++)
      {
-      //ImAgent *imAgent = (ImAgent*)v[indV];
-      Edge_detection_Agent *imAgent = (Edge_detection_Agent*)v[indV];
+      FilterAgent *imAgent = (FilterAgent*)v[indV];
       imAgent->draw(im);
      }
-
+    */
      if (cim=='s') {
                     snprintf(nomSauvegarde,sizeof(nomSauvegarde),
                         "Resultats/ImageIm_%d.ppm",indSauvegardeIm);
