@@ -1,28 +1,28 @@
 #include <stdio.h>
 #include <string.h>
-#include "FilterAgent.h"
+#include "ExplorationAgent.h"
 #include <iostream>             // Fichier ex.cpp
 #include <algorithm>    // std::sort
 #include <vector>       // std::vector
 //--
-FilterAgent::FilterAgent(System *sys) : Agent()
+ExplorationAgent::ExplorationAgent(System *sys) : Agent()
 {
  newAgent();
  _sys  = sys;
  _dir  = randomMinMax(1,8);
- _row  = randomMinMax(1,_sys->originale.getNbRow()-2);
- _col  = randomMinMax(1,_sys->originale.getNbCol()-2);
+ _row  = randomMinMax(0,_sys->originale.getNbRow()-1);
+ _col  = randomMinMax(0,_sys->originale.getNbCol()-1);
 }
 
 //--
-FilterAgent::FilterAgent(const FilterAgent& anI) : Agent(anI)
+ExplorationAgent::ExplorationAgent(const ExplorationAgent& anI) : Agent(anI)
 {
  newAgent();
  _copy(anI);
 }
 
 //--
-FilterAgent& FilterAgent::operator=(const FilterAgent& anI)
+ExplorationAgent& ExplorationAgent::operator=(const ExplorationAgent& anI)
 {
  if (this != &anI)
  {
@@ -34,36 +34,46 @@ FilterAgent& FilterAgent::operator=(const FilterAgent& anI)
 }
 
 //--
-FilterAgent::~FilterAgent(void)
+ExplorationAgent::~ExplorationAgent(void)
 {
  _destroy();
 }
 
 //--
-void FilterAgent::live(double dt)
+void ExplorationAgent::live(double dt)
 {
  (void)dt; // Pour eviter un warning si pas utilise
  
- // "Comportement" d'un Agent de la classe FilterAgent
- //cout << "My name is : " << getName() << endl;
+ // "Comportement" d'un Agent de la classe ExplorationAgent
+ // Look for an edge: 
+ // Dir is defined as follows: dir = Ph* dir - (1-Ph)*dirGVF(curr_pos)
+ // where Ph represents the percentage of chaotic component -> if =0, only GVF is important, if =1 total random dir
 
- octet v, newValPix;
- vector<octet> valPixs; // liste de pixels pour le filtre m�dian
+    curr_pos = = _sys->originale[_row][_col];
+    if(curr_pos == edge)
+    {
+        onEdge = true;
+    }
+// 1) agent checks if it is on a potential edge, not already visited by another agent. 
+//    If it is the case, determine the various possible directions of the edge, it creates a "EdgeFollowingAgent" for the detected directions.
+//    The created agents will follow the edge. After detecting an edge, the exploration agent changes into a node agent or disappears.
 
- if (_row > 1 && _row < _sys->originale.getNbRow() - 2) // Si l'agent n'est pas au bord de l'image
- {
-     for (int i = (int)_row - 2; i <= (int)_row + 2; i++)
-     {
-         for (int j = (int)_col - 2; j <= (int)_col + 2; j++) // le filtre median a un noyau de 3x3
-         {
-             v = _sys->originale[i][j];
-             valPixs.push_back(v);
-         }
-     }   
-     sort(valPixs.begin(), valPixs.end());
-     newValPix = valPixs.at(12); // filtre 5x5 donc 25 valeurs -> le median est la 5e valeur donc � l'indice  12 
-     _sys->resultat[_row][_col] = newValPix;
- }
+    if(onEdge)
+    {
+        directions = determineDirections();
+        for d in directions:
+            create_EdgeFollowingAgent(pos,d);
+        changeTo_NodeAgent();
+    }
+// 2) The agent moves to a potential gradient thanks to the GVF. It computes its new position. In some places of the GVF, dir =0, the agent
+//    follows a random direction. Agents can thus go to edges which do not express gradients sufficiently high to appear in the GVF.
+    else
+    {
+        next_pos = curr_pos + move_speed * dt * dir;
+        curr_pos = next_pos;
+    }
+// 3) if the agent doesn't find any edge before a deadline, it disappears.
+
 //-- Calcul nouvelle position
 
  size_t newRow, newCol;
@@ -75,8 +85,8 @@ void FilterAgent::live(double dt)
  else {  // L'agent est arrive sur un bord de l'image
 
       _dir  = randomMinMax(1,8);                             // Il est remis
-      _row  = randomMinMax(2,_sys->originale.getNbRow()-2);  // aleatoirement 
-      _col  = randomMinMax(2,_sys->originale.getNbCol()-2);  // dans l'image
+      _row  = randomMinMax(1,_sys->originale.getNbRow()-2);  // aleatoirement 
+      _col  = randomMinMax(1,_sys->originale.getNbCol()-2);  // dans l'image
 
                               // On peut aussi faire : new ImAgent(_sys);
                               // puis                : delete this;
@@ -84,7 +94,7 @@ void FilterAgent::live(double dt)
 }
 
 //--
-bool FilterAgent::getNewPos(size_t& row, size_t& col)
+bool ExplorationAgent::getNewPos(size_t& row, size_t& col)
 {
 #if 0 
  int newDir = randomMinMax(_dir-1,_dir+1);
@@ -99,7 +109,7 @@ bool FilterAgent::getNewPos(size_t& row, size_t& col)
 }
 
 //--
-bool FilterAgent::getPosDir(size_t& row, size_t& col) const // true si dans l'image
+bool ExplorationAgent::getPosDir(size_t& row, size_t& col) const // true si dans l'image
 {
  int dirRow, dirCol;
 
@@ -125,9 +135,9 @@ bool FilterAgent::getPosDir(size_t& row, size_t& col) const // true si dans l'im
 }
 
 //--
-void FilterAgent::draw(Image& im)
+void ExplorationAgent::draw(Image& im)
 {
- octet val = 1;
+ octet val = 127;
 
  im(_row-1,_col-1)=val;
  im(_row-1,_col  )=val;
@@ -147,26 +157,26 @@ void FilterAgent::draw(Image& im)
 }
 
 //--
-bool operator==(const FilterAgent& anI1, const FilterAgent& anI2)
+bool operator==(const ExplorationAgent& anI1, const ExplorationAgent& anI2)
 {
  return anI1.isEqualTo(anI2);
 }
 
 //--
-bool operator!=(const FilterAgent& anI1, const FilterAgent& anI2)
+bool operator!=(const ExplorationAgent& anI1, const ExplorationAgent& anI2)
 {
  return !(anI1==anI2);
 }
 
 //--
-ostream& operator<<(ostream& os, const FilterAgent& anI)
+ostream& operator<<(ostream& os, const ExplorationAgent& anI)
 {
  anI.display(os);
  return os;
 }
 
 //--
-void FilterAgent::display(ostream& os) const
+void ExplorationAgent::display(ostream& os) const
 {
  (void)os; // Pour eviter un warning si pas utilise
 
@@ -181,7 +191,7 @@ void FilterAgent::display(ostream& os) const
 }
 
 //--
-bool FilterAgent::isEqualTo(const FilterAgent& anI) const
+bool ExplorationAgent::isEqualTo(const ExplorationAgent& anI) const
 {
  (void)anI; // Pour eviter un warning si pas utilise
 
@@ -198,7 +208,7 @@ bool FilterAgent::isEqualTo(const FilterAgent& anI) const
 }
 
 //--
-void FilterAgent::_copy(const FilterAgent& anI)
+void ExplorationAgent::_copy(const ExplorationAgent& anI)
 {
  (void)anI; // Pour eviter un warning si pas utilise
 
@@ -212,7 +222,7 @@ void FilterAgent::_copy(const FilterAgent& anI)
 }
 
 //--
-void FilterAgent::_destroy(void)
+void ExplorationAgent::_destroy(void)
 {
  // Destruction des attributs de la classe ImAgent
  // Exemple : delete _at;
