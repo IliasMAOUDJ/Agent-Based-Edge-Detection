@@ -1,5 +1,5 @@
-#ifndef _FILTERAGENT_H_
-#define _FILTERAGENT_H_
+#ifndef _KirschAGENT_H_
+#define _KirschAGENT_H_
 
 #include <iostream>
 
@@ -9,31 +9,33 @@
 
 using namespace std;
 
-class FilterAgent : public Agent
+class KirschAgent : public Agent
 {
-    DEFCLASS(FilterAgent)
+    DEFCLASS(KirschAgent)
 
-        friend ostream& operator<<(ostream& os, const FilterAgent& anI);
+        friend ostream& operator<<(ostream& os, const KirschAgent& anI);
 
 public:
 
     // Allocateurs/Desallocateurs
 
-    FilterAgent(System* sys);
-    FilterAgent(const FilterAgent& anI);
-    FilterAgent& operator=(const FilterAgent& anI);
-    virtual ~FilterAgent(void);
+    KirschAgent(System* sys);
+    
+    KirschAgent(const KirschAgent& anI);
+    KirschAgent& operator=(const KirschAgent& anI);
+    virtual ~KirschAgent(void);
 
     virtual  void live(double dt);
 
+    
     bool getNewPos(size_t& row, size_t& col);       // true si dans l'image
     bool getPosDir(size_t& row, size_t& col) const; // true si dans l'image
     virtual  void draw(Image& im);
 
     // Comparaisons
 
-    friend  bool operator==(const FilterAgent& anI1, const FilterAgent& anI2);
-    friend  bool operator!=(const FilterAgent& anI1, const FilterAgent& anI2);
+    friend  bool operator==(const KirschAgent& anI1, const KirschAgent& anI2);
+    friend  bool operator!=(const KirschAgent& anI1, const KirschAgent& anI2);
 
     // Inspecteurs/modificateurs
 
@@ -44,9 +46,9 @@ protected:
     // display: a appeler dans une classe derivee      // display est une
     virtual void display(ostream& os) const;           // methode appelee
                                                        // dans operator<<
-
+    void kirschOperator(void);
     // isEqualTo: a appeler dans une classe derivee (dans operator==)
-    bool isEqualTo(const FilterAgent& anI) const;
+    bool isEqualTo(const KirschAgent& anI) const;
 
 protected:
 
@@ -60,12 +62,12 @@ private:
 
     size_t _row;
     size_t _col;
-
+    bool _edge_found;
 private:
 
     // Methodes privees d'allocation/desallocation
 
-    void _copy(const FilterAgent& anI);
+    void _copy(const KirschAgent& anI);
     void _destroy(void);
 
 };

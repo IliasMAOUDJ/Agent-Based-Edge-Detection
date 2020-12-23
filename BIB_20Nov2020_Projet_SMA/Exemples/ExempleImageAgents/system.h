@@ -6,6 +6,7 @@
 typedef struct {
                 Image im;
                 Image originale;
+                Image preprocessed;
                 Image resultat;
                }                                  System;
 

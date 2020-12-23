@@ -21,7 +21,9 @@ all: $(TARGET)
 
 FILESprogX=progX.cpp \
 	ImAgent.cpp \
-	Edge_detection.cpp
+	Edge_detection.cpp \
+	FilterAgent.cpp \
+	ExplorationAgent.cpp
 
 ###############################################################
 

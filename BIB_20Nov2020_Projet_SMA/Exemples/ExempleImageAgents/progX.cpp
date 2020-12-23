@@ -8,7 +8,9 @@ using namespace std;
 
 #include "LibImages.h"
 #include "MAS.h"
+#include "Edge_detection.h"
 #include "FilterAgent.h"
+#include "ExplorationAgent.h"
 #include "system.h"
 #include "ImAgent.h"
 
@@ -20,66 +22,77 @@ int main(void)
 
   System sys;
 
-//--
+  //--
 
-  Image& im        = sys.im;
-  Image& originale = sys.originale;
-  Image& resultat  = sys.resultat;
+  Image &im = sys.im;
+  Image &originale = sys.originale;
+  Image &preprocessed = sys.preprocessed;
+  Image &resultat = sys.resultat;
 
-//--
+  //--
 
   originale.loadImage("Images/Medic.ppm");
   im = originale;
-  resultat.setImageSize(im.getNbRow(),im.getNbCol());
-/**/
-//--
-
-  XAffichage *Fim       = new XAffichage(im.getNbRow(),im.getNbCol());
+  preprocessed.setImageSize(im.getNbRow(), im.getNbCol());
+  resultat.setImageSize(im.getNbRow(), im.getNbCol());
+  /**/
+  //--
+  XAffichage *Fim = new XAffichage(im.getNbRow(), im.getNbCol());
+  XAffichage *Fpreprocessed = new XAffichage(preprocessed.getNbRow(),
+                                             preprocessed.getNbCol());
   XAffichage *Fresultat = new XAffichage(resultat.getNbRow(),
                                          resultat.getNbCol());
+
   Fim->Afficher(im);
   Fim->XEvenement(im);
-
+  Fpreprocessed->Afficher(preprocessed);
+  Fpreprocessed->XEvenement(preprocessed);
   Fresultat->Afficher(resultat);
   Fresultat->XEvenement(resultat);
 
-//--
+  //bool exploredPixelsMatrix [im.getNbRow()][im.getNbCol()] = {{0}};
+  //--
 
-  for (int i = 0; i < NBAGENTS; i++) 
-  { 
-    //new ImAgent(&sys); 
-    new FilterAgent(&sys); 
+  for (int i = 0; i < NBAGENTS; i++)
+  {
+    //new ImAgent(&sys);
+    new KirschAgent(&sys);
+    new FilterAgent(&sys);
+    //new ExplorationAgent(&sys);
   }
 
-//--
+  //--
 
-  int  indSauvegardeIm=1;
-  int  indSauvegardeImResultat=1;
+  int indSauvegardeIm = 1;
+  int indSauvegardeImResultat = 1;
   char nomSauvegarde[2048];
 
   cout << "s: sauvegarder" << endl;
   cout << "q: quitter" << endl;
 
   while (1)
-    {
-     char cim, cimr;
+  {
+    char cim, cimr, cimp;
 
-     Fim->Afficher(im);
-     cim = Fim->XEvenement(im);
-     cim = tolower(cim);
+    Fim->Afficher(im);
+    cim = Fim->XEvenement(im);
+    cim = tolower(cim);
 
-     Fresultat->Afficher(resultat);
-     cimr = Fresultat->XEvenement(resultat);
-     cimr = tolower(cimr);
+    Fpreprocessed->Afficher(preprocessed);
+    cimp = Fpreprocessed->XEvenement(preprocessed);
+    cimp = tolower(cimp);
+    Fresultat->Afficher(resultat);
+    cimr = Fresultat->XEvenement(resultat);
+    cimr = tolower(cimr);
 
-     im = originale;
+    im = originale;
 
-     sched.cycle();
+    sched.cycle();
 
-     // "Affichage" dans im de tous les "ImAgent"
+    // "Affichage" dans im de tous les "ImAgent"
 
-     vector<Agent*> v;
-     getAllAgents("Agents",v);
+    vector<Agent *> v;
+    getAllAgents("Agents", v);
     /*
      size_t nbImAgents = v.size();
      
@@ -89,26 +102,29 @@ int main(void)
       imAgent->draw(im);
      }
     */
-     if (cim=='s') {
-                    snprintf(nomSauvegarde,sizeof(nomSauvegarde),
-                        "Resultats/ImageIm_%d.ppm",indSauvegardeIm);
-                    im.saveImage(nomSauvegarde);
-                    indSauvegardeIm++;
-     }
-
-     if (cimr=='s') {
-                    snprintf(nomSauvegarde,sizeof(nomSauvegarde),
-                        "Resultats/ImageImResultat_%d.ppm",
-                        indSauvegardeImResultat);
-                    resultat.saveImage(nomSauvegarde);
-                    indSauvegardeImResultat++;
-     }
-
-     if (cim=='q' || cimr=='q') break;
+    if (cim == 's')
+    {
+      snprintf(nomSauvegarde, sizeof(nomSauvegarde),
+               "Resultats/ImageIm_%d.ppm", indSauvegardeIm);
+      im.saveImage(nomSauvegarde);
+      indSauvegardeIm++;
     }
 
- delete(Fim);
- delete(Fresultat);
+    if (cimr == 's')
+    {
+      snprintf(nomSauvegarde, sizeof(nomSauvegarde),
+               "Resultats/ImageImResultat_%d.ppm",
+               indSauvegardeImResultat);
+      resultat.saveImage(nomSauvegarde);
+      indSauvegardeImResultat++;
+    }
 
- return(0);
+    if (cim == 'q' || cimr == 'q')
+      break;
+  }
+
+  delete (Fim);
+  delete (Fresultat);
+
+  return (0);
 }
