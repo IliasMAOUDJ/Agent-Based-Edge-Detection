@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#define NBAGENTS 2000
+#define NBAGENTS 10000
 
 using namespace std;
 
@@ -23,26 +23,38 @@ int main(int argc, char *argv[])
   System sys;
 
   //--
-  if (argc ==1)
-  {
-    cout << "Please enter a file name"<< endl;
-    return 0;
-  }
   Image &im = sys.im;
   Image &originale = sys.originale;
   Image &preprocessed = sys.preprocessed;
   Image &resultat = sys.resultat;
 
   //--
+  if (argc <2)
+  {
+    cout << "\nSyntax error: Must be ./progX <filename>"<< endl;
+    cout << "optional arguments: <NBAGENTS>\n"<< endl;
+    return -1;
+  }
   string str = "Images/";
   char *file = argv[1];
   char *path = &str[0];
   char *filename = strcat(path, file);
   originale.loadImage(filename);
+  int nbagents = NBAGENTS;
+  if(argc ==3)
+  {
+    nbagents = atoi(argv[2]);
+    if(nbagents==0)
+    {
+      cout << "\nSyntax error: NBAGENTS isn't int" << endl;
+      return -1;
+    }
+  }
 
   im = originale;
   preprocessed.setImageSize(im.getNbRow(), im.getNbCol());
   resultat.setImageSize(im.getNbRow(), im.getNbCol());
+  resultat.setImage(255);
   /**/
   //--
   XAffichage *Fim = new XAffichage(im.getNbRow(), im.getNbCol());
@@ -61,7 +73,7 @@ int main(int argc, char *argv[])
   //bool exploredPixelsMatrix [im.getNbRow()][im.getNbCol()] = {{0}};
   //--
 
-  for (int i = 0; i < NBAGENTS; i++)
+  for (int i = 0; i < nbagents; i++)
   {
     //new ImAgent(&sys);
     new KirschAgent(&sys);
