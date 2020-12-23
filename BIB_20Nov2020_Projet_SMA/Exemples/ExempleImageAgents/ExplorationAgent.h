@@ -1,5 +1,5 @@
-#ifndef _FILTERAGENT_H_
-#define _FILTERAGENT_H_
+#ifndef _EXPLORATIONAGENT_H_
+#define _EXPLORATIONAGENT_H_
 
 #include <iostream>
 
@@ -9,20 +9,20 @@
 
 using namespace std;
 
-class FilterAgent : public Agent
+class ExplorationAgent : public Agent
 {
-    DEFCLASS(FilterAgent)
+    DEFCLASS(ExplorationAgent)
 
-        friend ostream& operator<<(ostream& os, const FilterAgent& anI);
+        friend ostream& operator<<(ostream& os, const ExplorationAgent& anI);
 
 public:
 
     // Allocateurs/Desallocateurs
 
-    FilterAgent(System* sys);
-    FilterAgent(const FilterAgent& anI);
-    FilterAgent& operator=(const FilterAgent& anI);
-    virtual ~FilterAgent(void);
+    ExplorationAgent(System* sys);
+    ExplorationAgent(const ExplorationAgent& anI);
+    ExplorationAgent& operator=(const ExplorationAgent& anI);
+    virtual ~ExplorationAgent(void);
 
     virtual  void live(double dt);
 
@@ -32,8 +32,8 @@ public:
 
     // Comparaisons
 
-    friend  bool operator==(const FilterAgent& anI1, const FilterAgent& anI2);
-    friend  bool operator!=(const FilterAgent& anI1, const FilterAgent& anI2);
+    friend  bool operator==(const ExplorationAgent& anI1, const ExplorationAgent& anI2);
+    friend  bool operator!=(const ExplorationAgent& anI1, const ExplorationAgent& anI2);
 
     // Inspecteurs/modificateurs
 
@@ -46,7 +46,7 @@ protected:
                                                        // dans operator<<
 
     // isEqualTo: a appeler dans une classe derivee (dans operator==)
-    bool isEqualTo(const FilterAgent& anI) const;
+    bool isEqualTo(const ExplorationAgent& anI) const;
 
 protected:
 
@@ -65,8 +65,8 @@ private:
 
     // Methodes privees d'allocation/desallocation
 
-    void _copy(const FilterAgent& anI);
+    void _copy(const ExplorationAgent& anI);
     void _destroy(void);
 
 };
-#endif // _FILTER_AGENT_H_
+#endif // _EXPLORATIONAGENT_H_

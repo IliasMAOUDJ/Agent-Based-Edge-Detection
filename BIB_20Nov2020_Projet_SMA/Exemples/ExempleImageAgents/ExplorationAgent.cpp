@@ -43,7 +43,7 @@ ExplorationAgent::~ExplorationAgent(void)
 void ExplorationAgent::live(double dt)
 {
  (void)dt; // Pour eviter un warning si pas utilise
- 
+ /*
  // "Comportement" d'un Agent de la classe ExplorationAgent
  // Look for an edge: 
  // Dir is defined as follows: dir = Ph* dir - (1-Ph)*dirGVF(curr_pos)
@@ -73,7 +73,12 @@ void ExplorationAgent::live(double dt)
         curr_pos = next_pos;
     }
 // 3) if the agent doesn't find any edge before a deadline, it disappears.
+*/
 
+if(_sys->resultat[_row][_col] < 255)
+{
+    _sys->resultat[_row][_col] = 0;
+}
 //-- Calcul nouvelle position
 
  size_t newRow, newCol;
