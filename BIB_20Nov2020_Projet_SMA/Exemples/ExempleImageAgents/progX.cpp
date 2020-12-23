@@ -13,25 +13,33 @@ using namespace std;
 #include "ExplorationAgent.h"
 #include "system.h"
 #include "ImAgent.h"
-
+#include <cstring>
 #include <stdio.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
   Scheduler sched;
 
   System sys;
 
   //--
-
+  if (argc ==1)
+  {
+    cout << "Please enter a file name"<< endl;
+    return 0;
+  }
   Image &im = sys.im;
   Image &originale = sys.originale;
   Image &preprocessed = sys.preprocessed;
   Image &resultat = sys.resultat;
 
   //--
+  string str = "Images/";
+  char *file = argv[1];
+  char *path = &str[0];
+  char *filename = strcat(path, file);
+  originale.loadImage(filename);
 
-  originale.loadImage("Images/Medic.ppm");
   im = originale;
   preprocessed.setImageSize(im.getNbRow(), im.getNbCol());
   resultat.setImageSize(im.getNbRow(), im.getNbCol());
