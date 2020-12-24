@@ -56,13 +56,13 @@ void FilterAgent::live(double dt)
      {
          for (int j = (int)_col - 1; j <= (int)_col + 1; j++) // le filtre median a un noyau de 3x3
          {
-             v = _sys->originale[i][j];
+             v = _sys->resultat[i][j];
              valPixs.push_back(v);
          }
      }   
      sort(valPixs.begin(), valPixs.end());
      newValPix = valPixs.at(4); // filtre 5x5 donc 25 valeurs -> le median est la 5e valeur donc � l'indice  12 
-     _sys->preprocessed[_row][_col] = newValPix;
+     _sys->postprocessed[_row][_col] = newValPix;
  }
 //-- Calcul nouvelle position
 
@@ -127,9 +127,9 @@ bool FilterAgent::getPosDir(size_t& row, size_t& col) const // true si dans l'im
 //--
 void FilterAgent::draw(Image& im)
 {
- octet val = 1;
+// octet val = 255;
 
- im(_row-1,_col-1)=val;
+ /*im(_row-1,_col-1)=val;
  im(_row-1,_col  )=val;
  im(_row-1,_col+1)=val;
 
@@ -140,10 +140,10 @@ void FilterAgent::draw(Image& im)
  im(_row+1,_col-1)=val;
  im(_row+1,_col  )=val;
  im(_row+1,_col+1)=val;
-
+*/
  size_t dirRow, dirCol;
 
- if (getPosDir(dirRow,dirCol)) im(dirRow,dirCol)=0;
+ if (getPosDir(dirRow,dirCol)) im(dirRow,dirCol)=255;
 }
 
 //--
