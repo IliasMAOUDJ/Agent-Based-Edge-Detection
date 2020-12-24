@@ -23,7 +23,8 @@ FILESprogX=progX.cpp \
 	ImAgent.cpp \
 	Edge_detection.cpp \
 	FilterAgent.cpp \
-	ExplorationAgent.cpp
+	ExplorationAgent.cpp \
+	EdgeFollowingAgent.cpp
 
 ###############################################################
 

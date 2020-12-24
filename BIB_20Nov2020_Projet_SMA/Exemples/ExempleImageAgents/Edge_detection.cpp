@@ -1,17 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 #include "Edge_detection.h"
+#include "EdgeFollowingAgent.h"
 #include <iostream>  // Fichier ex.cpp
 #include <algorithm> // std::sort
 #include <vector>    // std::vector
+#include <cmath>
 //--
 KirschAgent::KirschAgent(System *sys) : Agent()
 {
     newAgent();
     _sys = sys;
     _dir = randomMinMax(1, 8);
-    _row = randomMinMax(1, _sys-> originale.getNbRow() - 2);
-    _col = randomMinMax(1, _sys-> originale.getNbCol() - 2);
+    _row = randomMinMax(1, _sys->originale.getNbRow() - 2);
+    _col = randomMinMax(1, _sys->originale.getNbCol() - 2);
 }
 
 //--
@@ -61,9 +63,9 @@ void KirschAgent::live(double dt)
     else
     { // L'agent est arrive sur un bord de l'image
 
-        _dir = randomMinMax(1, 8);                                 // Il est remis
-        _row = randomMinMax(2, _sys-> originale.getNbRow() - 2); // aleatoirement
-        _col = randomMinMax(2, _sys-> originale.getNbCol() - 2); // dans l'image
+        _dir = randomMinMax(1, 8);                              // Il est remis
+        _row = randomMinMax(2, _sys->originale.getNbRow() - 2); // aleatoirement
+        _col = randomMinMax(2, _sys->originale.getNbCol() - 2); // dans l'image
 
         // On peut aussi faire : new ImAgent(_sys);
         // puis                : delete this;
@@ -77,78 +79,78 @@ void KirschAgent::kirschOperator(void)
     // 6 5 4
     octet val = 0;
 
-    if (_row > 1 && _row < _sys-> originale.getNbRow() - 2)
+    if (_row > 1 && _row < _sys->originale.getNbRow() - 2)
     {
 
         switch (_dir)
         {
         case 1:
         {
-            val = (5 * _sys-> originale[_row - 1][_col - 1] + 5 * _sys-> originale[_row - 1][_col] + 5 * _sys-> originale[_row - 1][_col + 1] // [-3   -3  5]
-                   - 3 * _sys-> originale[_row][_col - 1] + 0 * _sys-> originale[_row][_col] - 3 * _sys-> originale[_row][_col + 1]           // [-3  0 5]
-                   - 3 * _sys-> originale[_row + 1][_col - 1] - 3 * _sys-> originale[_row + 1][_col] - 3 * _sys-> originale[_row + 1][_col + 1]) /
+            val = (5 * _sys->originale[_row - 1][_col - 1] + 5 * _sys->originale[_row - 1][_col] + 5 * _sys->originale[_row - 1][_col + 1] // [-3   -3  5]
+                   - 3 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] - 3 * _sys->originale[_row][_col + 1]           // [-3  0 5]
+                   - 3 * _sys->originale[_row + 1][_col - 1] - 3 * _sys->originale[_row + 1][_col] - 3 * _sys->originale[_row + 1][_col + 1]) /
                   15; //[-3 -3 5]
 
             break;
         } // 1
         case 2:
         {
-            val = (-3 * _sys-> originale[_row - 1][_col - 1] + 5 * _sys-> originale[_row - 1][_col] + 5 * _sys-> originale[_row - 1][_col + 1] // [-3   -3  5]
-                   - 3 * _sys-> originale[_row][_col - 1] + 0 * _sys-> originale[_row][_col] + 5 * _sys-> originale[_row][_col + 1]            // [-3  0 5]
-                   - 3 * _sys-> originale[_row + 1][_col - 1] - 3 * _sys-> originale[_row + 1][_col] - 3 * _sys-> originale[_row + 1][_col + 1]) /
+            val = (-3 * _sys->originale[_row - 1][_col - 1] + 5 * _sys->originale[_row - 1][_col] + 5 * _sys->originale[_row - 1][_col + 1] // [-3   -3  5]
+                   - 3 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] + 5 * _sys->originale[_row][_col + 1]            // [-3  0 5]
+                   - 3 * _sys->originale[_row + 1][_col - 1] - 3 * _sys->originale[_row + 1][_col] - 3 * _sys->originale[_row + 1][_col + 1]) /
                   15; //[-3 -3 5]
             break;
         } // 2
         case 3:
         {
-            val = (-3 * _sys-> originale[_row - 1][_col - 1] - 3 * _sys-> originale[_row - 1][_col] + 5 * _sys-> originale[_row - 1][_col + 1] // [-3   -3  5]
-                   - 3 * _sys-> originale[_row][_col - 1] + 0 * _sys-> originale[_row][_col] + 5 * _sys-> originale[_row][_col + 1]            // [-3  0 5]
-                   - 3 * _sys-> originale[_row + 1][_col - 1] - 3 * _sys-> originale[_row + 1][_col] + 5 * _sys-> originale[_row + 1][_col + 1]) /
+            val = (-3 * _sys->originale[_row - 1][_col - 1] - 3 * _sys->originale[_row - 1][_col] + 5 * _sys->originale[_row - 1][_col + 1] // [-3   -3  5]
+                   - 3 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] + 5 * _sys->originale[_row][_col + 1]            // [-3  0 5]
+                   - 3 * _sys->originale[_row + 1][_col - 1] - 3 * _sys->originale[_row + 1][_col] + 5 * _sys->originale[_row + 1][_col + 1]) /
                   15; //[-3 -3 5]
 
             break;
         } // 3
         case 4:
         {
-            val = (-3 * _sys-> originale[_row - 1][_col - 1] - 3 * _sys-> originale[_row - 1][_col] - 3 * _sys-> originale[_row - 1][_col + 1] // [-3   -3  -3]
-                   - 3 * _sys-> originale[_row][_col - 1] + 0 * _sys-> originale[_row][_col] + 5 * _sys-> originale[_row][_col + 1]            // [-3  0 5]
-                   - 3 * _sys-> originale[_row + 1][_col - 1] + 5 * _sys-> originale[_row + 1][_col] + 5 * _sys-> originale[_row + 1][_col + 1]) /
+            val = (-3 * _sys->originale[_row - 1][_col - 1] - 3 * _sys->originale[_row - 1][_col] - 3 * _sys->originale[_row - 1][_col + 1] // [-3   -3  -3]
+                   - 3 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] + 5 * _sys->originale[_row][_col + 1]            // [-3  0 5]
+                   - 3 * _sys->originale[_row + 1][_col - 1] + 5 * _sys->originale[_row + 1][_col] + 5 * _sys->originale[_row + 1][_col + 1]) /
                   15; //[-3 5 5]
 
             break;
         } // 4
         case 5:
         {
-            val = (-3 * _sys-> originale[_row - 1][_col - 1] - 3 * _sys-> originale[_row - 1][_col] - 3 * _sys-> originale[_row - 1][_col + 1] // [-3   -3  -3]
-                   - 3 * _sys-> originale[_row][_col - 1] + 0 * _sys-> originale[_row][_col] - 3 * _sys-> originale[_row][_col + 1]            // [-3  0 5]
-                   + 5 * _sys-> originale[_row + 1][_col - 1] + 5 * _sys-> originale[_row + 1][_col] + 5 * _sys-> originale[_row + 1][_col + 1]) /
+            val = (-3 * _sys->originale[_row - 1][_col - 1] - 3 * _sys->originale[_row - 1][_col] - 3 * _sys->originale[_row - 1][_col + 1] // [-3   -3  -3]
+                   - 3 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] - 3 * _sys->originale[_row][_col + 1]            // [-3  0 5]
+                   + 5 * _sys->originale[_row + 1][_col - 1] + 5 * _sys->originale[_row + 1][_col] + 5 * _sys->originale[_row + 1][_col + 1]) /
                   15; //[-3 5 5]
 
             break;
         } // 5
         case 6:
         {
-            val = (-3 * _sys-> originale[_row - 1][_col - 1] - 3 * _sys-> originale[_row - 1][_col] - 3 * _sys-> originale[_row - 1][_col + 1] // [-3   -3  -3]
-                   + 5 * _sys-> originale[_row][_col - 1] + 0 * _sys-> originale[_row][_col] - 3 * _sys-> originale[_row][_col + 1]            // [-3  0 -3]
-                   + 5 * _sys-> originale[_row + 1][_col - 1] + 5 * _sys-> originale[_row + 1][_col] - 3 * _sys-> originale[_row + 1][_col + 1]) /
+            val = (-3 * _sys->originale[_row - 1][_col - 1] - 3 * _sys->originale[_row - 1][_col] - 3 * _sys->originale[_row - 1][_col + 1] // [-3   -3  -3]
+                   + 5 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] - 3 * _sys->originale[_row][_col + 1]            // [-3  0 -3]
+                   + 5 * _sys->originale[_row + 1][_col - 1] + 5 * _sys->originale[_row + 1][_col] - 3 * _sys->originale[_row + 1][_col + 1]) /
                   15; //[5 5 5]
 
             break;
         } // 6
         case 7:
         {
-            val = (5 * _sys-> originale[_row - 1][_col - 1] - 3 * _sys-> originale[_row - 1][_col] - 3 * _sys-> originale[_row - 1][_col + 1] // [-3   -3  -3]
-                   + 5 * _sys-> originale[_row][_col - 1] + 0 * _sys-> originale[_row][_col] - 3 * _sys-> originale[_row][_col + 1]           // [-3  0 -3]
-                   + 5 * _sys-> originale[_row + 1][_col - 1] - 3 * _sys-> originale[_row + 1][_col] - 3 * _sys-> originale[_row + 1][_col + 1]) /
+            val = (5 * _sys->originale[_row - 1][_col - 1] - 3 * _sys->originale[_row - 1][_col] - 3 * _sys->originale[_row - 1][_col + 1] // [-3   -3  -3]
+                   + 5 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] - 3 * _sys->originale[_row][_col + 1]           // [-3  0 -3]
+                   + 5 * _sys->originale[_row + 1][_col - 1] - 3 * _sys->originale[_row + 1][_col] - 3 * _sys->originale[_row + 1][_col + 1]) /
                   15; //[5 5 5]
 
             break;
         } // 7
         default:
         {
-            val = (5 * _sys-> originale[_row - 1][_col - 1] + 5 * _sys-> originale[_row - 1][_col] - 3 * _sys-> originale[_row - 1][_col + 1] // [-3   -3  -3]
-                   + 5 * _sys-> originale[_row][_col - 1] + 0 * _sys-> originale[_row][_col] - 3 * _sys-> originale[_row][_col + 1]           // [-3  0 -3]
-                   - 3 * _sys-> originale[_row + 1][_col - 1] - 3 * _sys-> originale[_row + 1][_col] - 3 * _sys-> originale[_row + 1][_col + 1]) /
+            val = (5 * _sys->originale[_row - 1][_col - 1] + 5 * _sys->originale[_row - 1][_col] - 3 * _sys->originale[_row - 1][_col + 1] // [-3   -3  -3]
+                   + 5 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] - 3 * _sys->originale[_row][_col + 1]           // [-3  0 -3]
+                   - 3 * _sys->originale[_row + 1][_col - 1] - 3 * _sys->originale[_row + 1][_col] - 3 * _sys->originale[_row + 1][_col + 1]) /
                   15; //[5 5 5]
 
             break;
@@ -156,9 +158,12 @@ void KirschAgent::kirschOperator(void)
         }
     }
 
-    if (val < 4) //&& newVal > 220
+    if (abs(val) > 150)
     {
-        _sys->resultat[_row][_col] = val;
+        //_sys->resultat[_row][_col] = val;
+        
+        new EdgeFollowingAgent(_sys, _row, _col);
+        //delete this;
     }
 }
 //--
@@ -235,9 +240,9 @@ bool KirschAgent::getPosDir(size_t &row, size_t &col) const // true si dans l'im
 
     bool in = true;
 
-    if (dirRow < 0 || dirRow >= (int)(_sys-> originale.getNbRow()))
+    if (dirRow < 0 || dirRow >= (int)(_sys->originale.getNbRow()))
         in = false;
-    if (dirCol < 0 || dirCol >= (int)(_sys-> originale.getNbCol()))
+    if (dirCol < 0 || dirCol >= (int)(_sys->originale.getNbCol()))
         in = false;
 
     if (in)

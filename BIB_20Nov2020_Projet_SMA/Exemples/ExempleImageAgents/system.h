@@ -8,6 +8,7 @@ typedef struct {
                 Image originale;
                 Image preprocessed;
                 Image resultat;
+                Image postprocessed;
                }                                  System;
 
 #endif // _SYSTEM_H_

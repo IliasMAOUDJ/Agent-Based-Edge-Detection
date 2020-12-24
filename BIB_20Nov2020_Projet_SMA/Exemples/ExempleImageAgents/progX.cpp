@@ -10,7 +10,7 @@ using namespace std;
 #include "MAS.h"
 #include "Edge_detection.h"
 #include "FilterAgent.h"
-#include "ExplorationAgent.h"
+#include "EdgeFollowingAgent.h"
 #include "system.h"
 #include "ImAgent.h"
 #include <cstring>
@@ -25,14 +25,16 @@ int main(int argc, char *argv[])
   //--
   Image &im = sys.im;
   Image &originale = sys.originale;
-  Image &preprocessed = sys.preprocessed;
+  //Image &postprocessed = sys.postprocessed;
   Image &resultat = sys.resultat;
 
   //--
-  if (argc <2)
+
+  if (argc < 2)
   {
-    cout << "\nSyntax error: Must be ./progX <filename>"<< endl;
-    cout << "optional arguments: <NBAGENTS>\n"<< endl;
+    cout << "\nSyntax error: Must be ./progX <filename>" << endl;
+    cout << "optional arguments: <NBAGENTS>\n"
+         << endl;
     return -1;
   }
   string str = "Images/";
@@ -41,10 +43,10 @@ int main(int argc, char *argv[])
   char *filename = strcat(path, file);
   originale.loadImage(filename);
   int nbagents = NBAGENTS;
-  if(argc ==3)
+  if (argc == 3)
   {
     nbagents = atoi(argv[2]);
-    if(nbagents==0)
+    if (nbagents == 0)
     {
       cout << "\nSyntax error: NBAGENTS isn't int" << endl;
       return -1;
@@ -52,21 +54,21 @@ int main(int argc, char *argv[])
   }
 
   im = originale;
-  preprocessed.setImageSize(im.getNbRow(), im.getNbCol());
+  //postprocessed.setImageSize(im.getNbRow(), im.getNbCol());
   resultat.setImageSize(im.getNbRow(), im.getNbCol());
-  resultat.setImage(255);
+  //resultat.setImage(255);
   /**/
   //--
   XAffichage *Fim = new XAffichage(im.getNbRow(), im.getNbCol());
-  XAffichage *Fpreprocessed = new XAffichage(preprocessed.getNbRow(),
-                                             preprocessed.getNbCol());
+  //XAffichage *Fpostprocessed = new XAffichage(postprocessed.getNbRow(),
+  //                                            postprocessed.getNbCol());
   XAffichage *Fresultat = new XAffichage(resultat.getNbRow(),
                                          resultat.getNbCol());
 
-  Fim->Afficher(im);
-  Fim->XEvenement(im);
-  Fpreprocessed->Afficher(preprocessed);
-  Fpreprocessed->XEvenement(preprocessed);
+  //Fim->Afficher(im);
+  //Fim->XEvenement(im);
+  //Fpostprocessed->Afficher(postprocessed);
+  //Fpostprocessed->XEvenement(postprocessed);
   Fresultat->Afficher(resultat);
   Fresultat->XEvenement(resultat);
 
@@ -75,15 +77,13 @@ int main(int argc, char *argv[])
 
   for (int i = 0; i < nbagents; i++)
   {
-    //new ImAgent(&sys);
     new KirschAgent(&sys);
-    new FilterAgent(&sys);
-    //new ExplorationAgent(&sys);
+    //new FilterAgent(&sys);
   }
 
   //--
 
-  int indSauvegardeIm = 1;
+  //int indSauvegardeIm = 1;
   int indSauvegardeImResultat = 1;
   char nomSauvegarde[2048];
 
@@ -92,15 +92,16 @@ int main(int argc, char *argv[])
 
   while (1)
   {
-    char cim, cimr, cimp;
+    //char cim;
+    char cimr, cimp;
 
-    Fim->Afficher(im);
-    cim = Fim->XEvenement(im);
-    cim = tolower(cim);
+    //Fim->Afficher(im);
+    //cim = Fim->XEvenement(im);
+    //cim = tolower(cim);
 
-    Fpreprocessed->Afficher(preprocessed);
-    cimp = Fpreprocessed->XEvenement(preprocessed);
-    cimp = tolower(cimp);
+    //Fpostprocessed->Afficher(postprocessed);
+    //cimp = Fpostprocessed->XEvenement(postprocessed);
+    //cimp = tolower(cimp);
     Fresultat->Afficher(resultat);
     cimr = Fresultat->XEvenement(resultat);
     cimr = tolower(cimr);
@@ -111,17 +112,7 @@ int main(int argc, char *argv[])
 
     // "Affichage" dans im de tous les "ImAgent"
 
-    vector<Agent *> v;
-    getAllAgents("Agents", v);
-    /*
-     size_t nbImAgents = v.size();
-     
-     for(size_t indV=0; indV < nbImAgents ; indV++)
-     {
-      FilterAgent *imAgent = (FilterAgent*)v[indV];
-      imAgent->draw(im);
-     }
-    */
+    /*  
     if (cim == 's')
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
@@ -129,7 +120,7 @@ int main(int argc, char *argv[])
       im.saveImage(nomSauvegarde);
       indSauvegardeIm++;
     }
-
+*/
     if (cimr == 's')
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
@@ -139,7 +130,28 @@ int main(int argc, char *argv[])
       indSauvegardeImResultat++;
     }
 
-    if (cim == 'q' || cimr == 'q')
+    if (cimp == 'p')
+    {     
+      /*
+      for (int i = 0; i < nbagents; i++)
+      {
+        new FilterAgent(&sys);
+      }
+      cout << "Done" << endl;
+      vector<Agent *> v;
+      getAllAgents("FilterAgent", v);
+
+      size_t nbImAgents = v.size();
+
+      for (size_t indV = 0; indV < nbImAgents; indV++)
+      {
+        FilterAgent *imAgent = (FilterAgent *)v[indV];
+        imAgent->draw(postprocessed);
+      }
+      */
+    }
+
+    if (cimr == 'q')
       break;
   }
 
