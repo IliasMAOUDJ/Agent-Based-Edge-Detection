@@ -4,7 +4,8 @@
 #include <iostream>
 
 #include "MAS.h"
-
+#include <tuple>
+#include <vector>
 #include "system.h"
 
 using namespace std;
@@ -46,7 +47,9 @@ protected:
     // display: a appeler dans une classe derivee      // display est une
     virtual void display(ostream& os) const;           // methode appelee
                                                        // dans operator<<
-    void followEdge(void);
+    bool followEdge(void);
+
+    bool Contains(const std::vector<tuple<int,int>> &list, tuple<int,int> x);
     // isEqualTo: a appeler dans une classe derivee (dans operator==)
     bool isEqualTo(const  EdgeFollowingAgent& anI) const;
 
@@ -62,7 +65,8 @@ private:
 
     size_t _row;
     size_t _col;
-    bool _edge_found;
+    vector<tuple<int,int>> _explored;
+
 private:
 
     // Methodes privees d'allocation/desallocation
@@ -71,4 +75,4 @@ private:
     void _destroy(void);
 
 };
-#endif // _EDGE_DETECTION_H_
+#endif // _EDGE_FOLLOWING_AGENT_H_
