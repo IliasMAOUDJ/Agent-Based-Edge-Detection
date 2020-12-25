@@ -50,19 +50,19 @@ void FilterAgent::live(double dt)
  octet v, newValPix;
  vector<octet> valPixs; // liste de pixels pour le filtre m�dian
 
- if (_row > 1 && _row < _sys->resultat.getNbRow() - 2) // Si l'agent n'est pas au bord de l'image
+ if (_row > 1 && _row < _sys->originale.getNbRow() - 2) // Si l'agent n'est pas au bord de l'image
  {
      for (int i = (int)_row - 1; i <= (int)_row + 1; i++)
      {
          for (int j = (int)_col - 1; j <= (int)_col + 1; j++) // le filtre median a un noyau de 3x3
          {
-             v = _sys->resultat[i][j];
+             v = _sys->originale[i][j];
              valPixs.push_back(v);
          }
      }   
      sort(valPixs.begin(), valPixs.end());
      newValPix = valPixs.at(4); // filtre 5x5 donc 25 valeurs -> le median est la 5e valeur donc � l'indice  12 
-     _sys->postprocessed[_row][_col] = newValPix;
+     _sys->preprocessed[_row][_col] = newValPix;
  }
 //-- Calcul nouvelle position
 

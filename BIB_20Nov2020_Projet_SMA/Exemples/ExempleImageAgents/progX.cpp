@@ -15,6 +15,7 @@ using namespace std;
 #include "ImAgent.h"
 #include <cstring>
 #include <stdio.h>
+#include <algorithm>
 
 int main(int argc, char *argv[])
 {
@@ -25,7 +26,7 @@ int main(int argc, char *argv[])
   //--
   Image &im = sys.im;
   Image &originale = sys.originale;
-  //Image &postprocessed = sys.postprocessed;
+  Image &preprocessed = sys.preprocessed;
   Image &resultat = sys.resultat;
 
   //--
@@ -54,26 +55,23 @@ int main(int argc, char *argv[])
   }
 
   im = originale;
-  //postprocessed.setImageSize(im.getNbRow(), im.getNbCol());
+  preprocessed.setImageSize(im.getNbRow(), im.getNbCol());
   resultat.setImageSize(im.getNbRow(), im.getNbCol());
-  //resultat.setImage(255);
+  resultat.setImage(128);
   /**/
   //--
   XAffichage *Fim = new XAffichage(im.getNbRow(), im.getNbCol());
-  //XAffichage *Fpostprocessed = new XAffichage(postprocessed.getNbRow(),
-  //                                            postprocessed.getNbCol());
+  XAffichage *Fpreprocessed = new XAffichage(preprocessed.getNbRow(),
+                                              preprocessed.getNbCol());
   XAffichage *Fresultat = new XAffichage(resultat.getNbRow(),
                                          resultat.getNbCol());
 
-  //Fim->Afficher(im);
-  //Fim->XEvenement(im);
-  //Fpostprocessed->Afficher(postprocessed);
-  //Fpostprocessed->XEvenement(postprocessed);
+  Fim->Afficher(im);
+  Fim->XEvenement(im);
+  Fpreprocessed->Afficher(preprocessed);
+  Fpreprocessed->XEvenement(preprocessed);
   Fresultat->Afficher(resultat);
   Fresultat->XEvenement(resultat);
-
-  //bool exploredPixelsMatrix [im.getNbRow()][im.getNbCol()] = {{0}};
-  //--
 
   for (int i = 0; i < nbagents; i++)
   {
@@ -82,8 +80,29 @@ int main(int argc, char *argv[])
   }
 
   //--
+  octet v, newValPix;
+  for(size_t r=2; r<im.getNbRow()-2;++r)
+  {
+    for(size_t c=2; c<im.getNbCol()-2;++c)
+    {
+      vector<octet> valPixs;
+      for (int i = (int)r - 2; i <= (int)r + 2; i++)
+     {
+         for (int j = (int)c - 2; j <= (int)c + 2; j++) // le filtre median a un noyau de 3x3
+         {
+             v = im[i][j];
+             valPixs.push_back(v);
+         }
+     }   
+     sort(valPixs.begin(), valPixs.end());
+     newValPix = valPixs.at(12); // filtre 5x5 donc 25 valeurs -> le median est la 5e valeur donc � l'indice  12 
+     preprocessed[r][c] = newValPix;
+    }
+  }
 
-  //int indSauvegardeIm = 1;
+  //--
+
+  int indSauvegardeIm = 1;
   int indSauvegardeImResultat = 1;
   char nomSauvegarde[2048];
 
@@ -92,27 +111,47 @@ int main(int argc, char *argv[])
 
   while (1)
   {
-    //char cim;
+    char cim;
     char cimr, cimp;
 
-    //Fim->Afficher(im);
-    //cim = Fim->XEvenement(im);
-    //cim = tolower(cim);
+    Fim->Afficher(originale);
+    cim = Fim->XEvenement(originale);
+    cim = tolower(cim);
 
-    //Fpostprocessed->Afficher(postprocessed);
-    //cimp = Fpostprocessed->XEvenement(postprocessed);
-    //cimp = tolower(cimp);
+    Fpreprocessed->Afficher(im);
+    cimp = Fpreprocessed->XEvenement(im);
+    cimp = tolower(cimp);
+    
     Fresultat->Afficher(resultat);
     cimr = Fresultat->XEvenement(resultat);
     cimr = tolower(cimr);
 
-    im = originale;
+    im = preprocessed;
 
     sched.cycle();
 
     // "Affichage" dans im de tous les "ImAgent"
+      vector<Agent *> v;
+      getAllAgents("EdgeFollowingAgent", v);
+      size_t nbImAgents = v.size();
 
-    /*  
+      for (size_t indV = 0; indV < nbImAgents; indV++)
+      {
+        EdgeFollowingAgent *imAgent = (EdgeFollowingAgent *)v[indV];
+        imAgent->draw(im);
+      }
+
+
+      vector<Agent *> e;
+      getAllAgents("KirschAgent", e);
+      size_t nbKAgents = e.size();
+
+      for (size_t indV = 0; indV < nbKAgents; indV++)
+      {
+        KirschAgent *imAgent = (KirschAgent *)e[indV];
+        imAgent->draw(im);
+      }
+
     if (cim == 's')
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
@@ -120,7 +159,7 @@ int main(int argc, char *argv[])
       im.saveImage(nomSauvegarde);
       indSauvegardeIm++;
     }
-*/
+
     if (cimr == 's')
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
@@ -130,32 +169,13 @@ int main(int argc, char *argv[])
       indSauvegardeImResultat++;
     }
 
-    if (cimp == 'p')
-    {     
-      /*
-      for (int i = 0; i < nbagents; i++)
-      {
-        new FilterAgent(&sys);
-      }
-      cout << "Done" << endl;
-      vector<Agent *> v;
-      getAllAgents("FilterAgent", v);
-
-      size_t nbImAgents = v.size();
-
-      for (size_t indV = 0; indV < nbImAgents; indV++)
-      {
-        FilterAgent *imAgent = (FilterAgent *)v[indV];
-        imAgent->draw(postprocessed);
-      }
-      */
-    }
 
     if (cimr == 'q')
       break;
   }
 
   delete (Fim);
+  delete (Fpreprocessed);
   delete (Fresultat);
 
   return (0);

@@ -10,9 +10,10 @@ EdgeFollowingAgent::EdgeFollowingAgent(System *sys, size_t row, size_t col) : Ag
 {
     newAgent();
     _sys = sys;
-    _dir = randomMinMax(1, 8);
+    _dir = 0;
     _row = row;
     _col = col;
+    _explored.push_back(make_tuple(row,col));
 }
 
 //--
@@ -44,18 +45,26 @@ EdgeFollowingAgent::~EdgeFollowingAgent(void)
 void EdgeFollowingAgent::live(double dt)
 {
     (void)dt; // Pour eviter un warning si pas utilise
+    // Ajout de la position actuelle à la liste des positions explorées
+    _explored.push_back(make_tuple(_row,_col));
 
-    // "Comportement" d'un Agent de la classe EdgeFollowingAgent
-    //cout << "My name is : " << getName() << endl;
-
-    followEdge();
+    bool backtrack = followEdge();
     //-- Calcul nouvelle position
     getNewPos(_row, _col);
 
-    
+    tuple<int, int> currentPos = make_tuple(_row,_col);
+    if(Contains(_explored, currentPos) || backtrack)
+    {
+        delete this;
+    }
 }
 
-void EdgeFollowingAgent::followEdge(void)
+bool EdgeFollowingAgent::Contains(const std::vector<tuple<int,int>> &list,  tuple<int,int> x)
+{
+	return std::find(list.begin(), list.end(), x) != list.end();
+}
+
+bool EdgeFollowingAgent::followEdge(void)
 {
     // 8 1 2
     // 7 X 3
@@ -121,30 +130,38 @@ void EdgeFollowingAgent::followEdge(void)
 
         } // 8
 
-        if (abs(val) > minVal)
+        if (abs(val) > abs(minVal))
         {
-            minVal = abs(val);
-            if(i != (origin-2)%8)
+            minVal = val;
+            if(i != (origin+2)%8)
             {
-            _dir = i;     
+                _dir = i;     
             }
             else
             {
-                _dir = (i-4)%8; 
+                _dir = (i+4)%8; 
             }
         }
     }
 
-    if(minVal>200)
+    if(abs(minVal)>180)
     {
-        _sys->resultat[_row][_col] = minVal;
+        if(minVal<0)
+        {
+            _sys->resultat[_row][_col] = 0;
+        }
+        else
+        {
+            _sys->resultat[_row][_col] = 255;
+        }       
     }
-    else if(origin == _dir)
+    
+    if(origin == (_dir+4)%8)
     {
-        //delete this;
+        return true;
     }
 
-    
+    return false;
 }
 //--
 bool EdgeFollowingAgent::getNewPos(size_t &row, size_t &col)
