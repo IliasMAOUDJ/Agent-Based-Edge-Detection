@@ -2,17 +2,15 @@
 
 #include <vector>
 
-#define NBAGENTS 10000
+#define NBAGENTS 1000
 
 using namespace std;
 
 #include "LibImages.h"
 #include "MAS.h"
 #include "Edge_detection.h"
-#include "FilterAgent.h"
 #include "EdgeFollowingAgent.h"
 #include "system.h"
-#include "ImAgent.h"
 #include <cstring>
 #include <stdio.h>
 #include <algorithm>
@@ -28,7 +26,7 @@ int main(int argc, char *argv[])
   Image &originale = sys.originale;
   Image &preprocessed = sys.preprocessed;
   Image &resultat = sys.resultat;
-
+  Image &explored = sys.explored;
   //--
 
   if (argc < 2)
@@ -44,13 +42,13 @@ int main(int argc, char *argv[])
   char *filename = strcat(path, file);
   originale.loadImage(filename);
   int nbagents = NBAGENTS;
-  if (argc == 3)
+  if (argc >= 3)
   {
     nbagents = atoi(argv[2]);
     if (nbagents == 0)
     {
-      cout << "\nSyntax error: NBAGENTS isn't int" << endl;
-      return -1;
+      cout << "\nNBAGENTS isn't int" << endl;
+      cout << "Using default value: 1000" << endl;
     }
   }
 
@@ -58,45 +56,63 @@ int main(int argc, char *argv[])
   preprocessed.setImageSize(im.getNbRow(), im.getNbCol());
   resultat.setImageSize(im.getNbRow(), im.getNbCol());
   resultat.setImage(128);
-  /**/
+
+  explored.setImageSize(im.getNbRow(), im.getNbCol());
+  explored.setImage(128);
   //--
-  XAffichage *Fim = new XAffichage(im.getNbRow(), im.getNbCol());
+
+  //XAffichage *Fim = new XAffichage(im.getNbRow(), im.getNbCol());
   XAffichage *Fpreprocessed = new XAffichage(preprocessed.getNbRow(),
-                                              preprocessed.getNbCol());
+                                             preprocessed.getNbCol());
   XAffichage *Fresultat = new XAffichage(resultat.getNbRow(),
                                          resultat.getNbCol());
 
-  Fim->Afficher(im);
-  Fim->XEvenement(im);
+  //XAffichage *Fexplored = new XAffichage(explored.getNbRow(), explored.getNbCol());
+
   Fpreprocessed->Afficher(preprocessed);
   Fpreprocessed->XEvenement(preprocessed);
+
   Fresultat->Afficher(resultat);
   Fresultat->XEvenement(resultat);
 
   for (int i = 0; i < nbagents; i++)
   {
     new KirschAgent(&sys);
-    //new FilterAgent(&sys);
   }
 
   //--
   octet v, newValPix;
-  for(size_t r=2; r<im.getNbRow()-2;++r)
+  for (size_t r = 0; r < im.getNbRow()-1; ++r)
   {
-    for(size_t c=2; c<im.getNbCol()-2;++c)
+    for (size_t c = 0; c < im.getNbCol()-1; ++c)
     {
-      vector<octet> valPixs;
-      for (int i = (int)r - 2; i <= (int)r + 2; i++)
-     {
-         for (int j = (int)c - 2; j <= (int)c + 2; j++) // le filtre median a un noyau de 3x3
-         {
-             v = im[i][j];
-             valPixs.push_back(v);
-         }
-     }   
-     sort(valPixs.begin(), valPixs.end());
-     newValPix = valPixs.at(12); // filtre 5x5 donc 25 valeurs -> le median est la 5e valeur donc � l'indice  12 
-     preprocessed[r][c] = newValPix;
+      if (r < 2 || c < 2 || r > im.getNbRow() - 3 || c > im.getNbCol() - 3) // if on border of the image just copy the original pixel
+      {
+        preprocessed[r][c] = originale[r][c];
+      }
+      else
+      {
+        if (argc == 4 && string(argv[3]) == "-f") // "-f" as filter, allowing preprocessing of the image with a median filter.
+        {
+          vector<octet> valPixs;
+
+          for (int i = (int)r - 2; i <= (int)r + 2; i++)
+          {
+            for (int j = (int)c - 2; j <= (int)c + 2; j++) // le filtre median a un noyau de 5x5
+            {
+              v = im[i][j];
+              valPixs.push_back(v);
+            }
+          }
+          sort(valPixs.begin(), valPixs.end());
+          newValPix = valPixs.at(12); // filtre 5x5 donc 25 valeurs -> le median est la 5e valeur donc � l'indice  12
+          preprocessed[r][c] = newValPix;
+        }
+        else
+        {
+          preprocessed[r][c] = originale[r][c];
+        }
+      }
     }
   }
 
@@ -111,52 +127,48 @@ int main(int argc, char *argv[])
 
   while (1)
   {
-    char cim;
     char cimr, cimp;
-
-    Fim->Afficher(originale);
-    cim = Fim->XEvenement(originale);
-    cim = tolower(cim);
 
     Fpreprocessed->Afficher(im);
     cimp = Fpreprocessed->XEvenement(im);
     cimp = tolower(cimp);
-    
+
     Fresultat->Afficher(resultat);
     cimr = Fresultat->XEvenement(resultat);
     cimr = tolower(cimr);
+
+    //Fexplored->Afficher(explored);
 
     im = preprocessed;
 
     sched.cycle();
 
     // "Affichage" dans im de tous les "ImAgent"
-      vector<Agent *> v;
-      getAllAgents("EdgeFollowingAgent", v);
-      size_t nbImAgents = v.size();
+    vector<Agent *> v;
+    getAllAgents("EdgeFollowingAgent", v);
+    size_t nbImAgents = v.size();
 
-      for (size_t indV = 0; indV < nbImAgents; indV++)
-      {
-        EdgeFollowingAgent *imAgent = (EdgeFollowingAgent *)v[indV];
-        imAgent->draw(im);
-      }
+    for (size_t indV = 0; indV < nbImAgents; indV++)
+    {
+      EdgeFollowingAgent *imAgent = (EdgeFollowingAgent *)v[indV];
+      imAgent->draw(im);
+    }
+/*
+    vector<Agent *> e;
+    getAllAgents("KirschAgent", e);
+    size_t nbKAgents = e.size();
 
-
-      vector<Agent *> e;
-      getAllAgents("KirschAgent", e);
-      size_t nbKAgents = e.size();
-
-      for (size_t indV = 0; indV < nbKAgents; indV++)
-      {
-        KirschAgent *imAgent = (KirschAgent *)e[indV];
-        imAgent->draw(im);
-      }
-
-    if (cim == 's')
+    for (size_t indV = 0; indV < nbKAgents; indV++)
+    {
+      KirschAgent *imAgent = (KirschAgent *)e[indV];
+      imAgent->draw(im);
+    }
+*/
+    if (cimp == 's')
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
                "Resultats/ImageIm_%d.ppm", indSauvegardeIm);
-      im.saveImage(nomSauvegarde);
+      preprocessed.saveImage(nomSauvegarde);
       indSauvegardeIm++;
     }
 
@@ -169,12 +181,10 @@ int main(int argc, char *argv[])
       indSauvegardeImResultat++;
     }
 
-
-    if (cimr == 'q')
+    if (cimr == 'q' || cimp == 'q')
       break;
   }
 
-  delete (Fim);
   delete (Fpreprocessed);
   delete (Fresultat);
 

@@ -20,10 +20,7 @@ all: $(TARGET)
 #------------ Les fichiers sources --
 
 FILESprogX=progX.cpp \
-	ImAgent.cpp \
 	Edge_detection.cpp \
-	FilterAgent.cpp \
-	ExplorationAgent.cpp \
 	EdgeFollowingAgent.cpp
 
 ###############################################################
