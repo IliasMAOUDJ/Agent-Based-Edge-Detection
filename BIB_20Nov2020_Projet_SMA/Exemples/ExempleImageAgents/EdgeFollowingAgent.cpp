@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "EdgeFollowingAgent.h"
+#include "NodeAgent.h"
 #include <iostream>  // Fichier ex.cpp
 #include <algorithm> // std::sort
 #include <vector>    // std::vector
@@ -61,6 +62,7 @@ void EdgeFollowingAgent::live(double dt)
     tuple<int, int> currentPos = make_tuple(_row, _col);
     if (Contains(_explored, currentPos) || backtrack)
     {
+		new NodeAgent(_sys, _row, _col);
         delete this;
     }
 }
