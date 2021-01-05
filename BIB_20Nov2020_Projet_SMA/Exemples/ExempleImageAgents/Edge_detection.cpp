@@ -48,10 +48,11 @@ void KirschAgent::live(double dt)
 
     // "Comportement" d'un Agent de la classe KirschAgent
     //cout << "My name is : " << getName() << endl;
-    if (_sys->explored[_row][_col] != 0)
-        _sys->explored[_row][_col] = 255;
+    
+    
     kirschOperator();
-
+    if (_sys->explored[_row][_col] != 255)
+        _sys->explored[_row][_col] = 255;
     //-- Calcul nouvelle position
 
     size_t newRow, newCol;
@@ -79,7 +80,7 @@ void KirschAgent::kirschOperator(void)
     // 6 5 4
     int val = 0;
 
-    if (_row > 0 && _row < _sys->preprocessed.getNbRow() - 1)
+    if (_row > 0 && _row < _sys->preprocessed.getNbRow()-1)
     {
 
         switch (_dir)
@@ -150,11 +151,9 @@ void KirschAgent::kirschOperator(void)
         }
     }
     
-    //cout << "val= " <<  val << endl;
-    if (abs(val)/15 > 15)
+    if (abs(val)/15 > 15 && _sys->explored[_row][_col] != 255)
     {        
         new EdgeFollowingAgent(_sys, _row, _col);
-        //delete this;
     }
 }
 //--

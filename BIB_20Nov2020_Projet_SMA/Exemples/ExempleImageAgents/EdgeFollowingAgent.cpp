@@ -5,6 +5,7 @@
 #include <algorithm> // std::sort
 #include <vector>    // std::vector
 #include <cmath>
+#include <map>
 //--
 EdgeFollowingAgent::EdgeFollowingAgent(System *sys, size_t row, size_t col) : Agent()
 {
@@ -13,7 +14,7 @@ EdgeFollowingAgent::EdgeFollowingAgent(System *sys, size_t row, size_t col) : Ag
     _dir = 0;
     _row = row;
     _col = col;
-    _explored.push_back(make_tuple(row,col));
+    _explored.push_back(make_tuple(row, col));
 }
 
 //--
@@ -45,35 +46,63 @@ EdgeFollowingAgent::~EdgeFollowingAgent(void)
 void EdgeFollowingAgent::live(double dt)
 {
     (void)dt; // Pour eviter un warning si pas utilise
-    // Ajout de la position actuelle à la liste des positions explorées$
-    if(_sys->explored[_row][_col] != 255)
-        _sys->explored[_row][_col] = 0;
-    _explored.push_back(make_tuple(_row,_col));
+              // Ajout de la position actuelle à la liste des positions explorées
 
+    if (_sys->explored[_row][_col] != 255)
+        _sys->explored[_row][_col] = 255;
+
+    _explored.push_back(make_tuple(_row, _col));
+
+    //map<int, int> hist = computeLocalHist(3);
     bool backtrack = followEdge();
     //-- Calcul nouvelle position
     getNewPos(_row, _col);
 
-    tuple<int, int> currentPos = make_tuple(_row,_col);
-    if(Contains(_explored, currentPos) || backtrack)
+    tuple<int, int> currentPos = make_tuple(_row, _col);
+    if (Contains(_explored, currentPos) || backtrack)
     {
         delete this;
     }
 }
 
-bool EdgeFollowingAgent::Contains(const std::vector<tuple<int,int>> &list,  tuple<int,int> x)
+bool EdgeFollowingAgent::Contains(const std::vector<tuple<int, int>> &list, tuple<int, int> x)
 {
-	return std::find(list.begin(), list.end(), x) != list.end();
+    return std::find(list.begin(), list.end(), x) != list.end();
 }
 
-bool EdgeFollowingAgent::followEdge(void)
+bool EdgeFollowingAgent::followEdge()
 {
     // 8 1 2
     // 7 X 3
     // 6 5 4
     int val = 0;
-    int minVal =0;
+    int minVal = 0;
     int origin = _dir;
+    /*
+    int cdf = 0;
+    // hist: - first is pixel value [0;255]
+    //      - second is number of pixels with first value
+    // normalized_hist : - first is pixel value
+    //                   - second is normalized value
+    
+    map<int, int> normalized_hist;
+    int cdfmin = hist.begin()->second;
+
+    for (auto item : hist)
+    {
+        if (cdfmin == k * k)
+        {
+            normalized_hist[item.first] = item.first;
+        }
+        else
+        {
+            cdf += item.second;
+            float D = (cdf - cdfmin);
+            float N = (k * k) - cdfmin;
+            normalized_hist[item.first] = (int)(D / N * 255);
+        }
+    }
+    */
     for (int i = 0; i < 8; i++)
     {
         if (i == 3)
@@ -81,8 +110,8 @@ bool EdgeFollowingAgent::followEdge(void)
             val = (5 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]     // [-3   -3  5]
                    - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
                    - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 5]
-        }                                                                                                                                      // 1
-        if (i ==4)
+        }                                                                                                                                               // 1
+        if (i == 4)
         {
             val = (-3 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  5]
                    - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] + 5 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
@@ -135,36 +164,35 @@ bool EdgeFollowingAgent::followEdge(void)
         if (abs(val) > abs(minVal))
         {
             minVal = val;
-            if(i != (origin+2)%8)
-            {
-                _dir = i;     
-            }
-            else
-            {
-                _dir = (i+4)%8; 
-            }
+            _dir = i;
+        }
+        else if (abs(val) == abs(minVal))
+        {
+            cout << "[" << _row << "][" << _col << "]" << endl;
+            cout << "for i= " << i << " and _dir=" << _dir << "\t value is " << val <<  endl;
+            cout << "(" << (int)_sys->preprocessed[_row - 1][_col - 1] << "\t" << (int)_sys->preprocessed[_row - 1][_col] << "\t" << (int)_sys->preprocessed[_row - 1][_col + 1] << ")" << endl
+                 << "(" << (int)_sys->preprocessed[_row][_col - 1] << "\t" << (int)_sys->preprocessed[_row][_col] << "\t" << (int)_sys->preprocessed[_row][_col + 1] << ")" << endl
+                 << "(" << (int)_sys->preprocessed[_row + 1][_col - 1] << "\t" <<(int) _sys->preprocessed[_row + 1][_col] << "\t" << (int)_sys->preprocessed[_row + 1][_col + 1] << ")" << endl;
+        }
+        
+    }
+
+    if (abs(minVal) / 15 > 10)
+    {
+        if (minVal < 0)
+        {
+            _sys->resultat[_row][_col] = 255;
+            _sys->superposed.writePix(_row, _col, 0, 0, 255);
+        }
+
+        else if (minVal > 0)
+        {
+            _sys->resultat[_row][_col] = 0;
+            _sys->superposed.writePix(_row, _col, 255, 0, 0);
         }
     }
 
-    if(abs(minVal)/15>1)
-    {
-        if(minVal<0)
-        {
-            _sys->resultat[_row][_col] = 0;
-        }
-        else
-        {
-            _sys->resultat[_row][_col] = 255;
-        }       
-    }
-    /*
-    else if(abs(minVal)>160)
-    {
-        _sys->resultat[_row][_col] = 180;
-    }
-    */
-    
-    if(origin == (_dir+4)%8)
+    if (origin == (_dir + 4) % 8)
     {
         return true;
     }
@@ -172,6 +200,23 @@ bool EdgeFollowingAgent::followEdge(void)
     return false;
 }
 //--
+
+map<int, int> EdgeFollowingAgent::computeLocalHist(size_t k) // compute local histogram of k*k pixels around the current pixel
+{
+    map<int, int> hist;
+    size_t l = (k - 1) / 2;
+    for (size_t r = _row - l; r <= _row + l; r++)
+    {
+        for (size_t c = _col - l; c <= _col + l; c++)
+        {
+
+            int o = _sys->preprocessed[r][c];
+            hist[o]++;
+        }
+    }
+    return hist;
+}
+
 bool EdgeFollowingAgent::getNewPos(size_t &row, size_t &col)
 {
 #if 0 
@@ -245,9 +290,9 @@ bool EdgeFollowingAgent::getPosDir(size_t &row, size_t &col) const // true si da
 
     bool in = true;
 
-    if (dirRow < 1 || dirRow >= (int)(_sys->preprocessed.getNbRow()-1))
+    if (dirRow < 1 || dirRow >= (int)(_sys->preprocessed.getNbRow() - 1))
         in = false;
-    if (dirCol < 1 || dirCol >= (int)(_sys->preprocessed.getNbCol()-1))
+    if (dirCol < 1 || dirCol >= (int)(_sys->preprocessed.getNbCol() - 1))
         in = false;
 
     if (in)
