@@ -262,7 +262,7 @@ bool NodeAgent::getPosDir(size_t &row, size_t &col) const // true si dans l'imag
 //--
 void NodeAgent::draw(Image &im)
 {
-    octet val = 0;
+    octet val = 255;
 
     im(_row - 1, _col - 1) = val;
     im(_row - 1, _col) = val;

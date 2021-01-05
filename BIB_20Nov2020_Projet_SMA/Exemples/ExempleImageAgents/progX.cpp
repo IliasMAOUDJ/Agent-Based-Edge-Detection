@@ -10,6 +10,7 @@ using namespace std;
 #include "MAS.h"
 #include "Edge_detection.h"
 #include "EdgeFollowingAgent.h"
+#include "NodeAgent.h"
 #include "system.h"
 #include <cstring>
 #include <stdio.h>
@@ -28,6 +29,10 @@ int main(int argc, char *argv[])
   Image &resultat = sys.resultat;
   Image &explored = sys.explored;
   ImageRVB &superposed = sys.superposed;
+
+  sys.pixelExplored = 0;
+  int &pixelExplored = sys.pixelExplored;
+
   //--
 
   if (argc < 2)
@@ -101,7 +106,7 @@ int main(int argc, char *argv[])
   {
     for (int c = 0; c < (int)im.getNbCol(); ++c)
     {
-      if (r < k || c < k || r > (int)im.getNbRow() -1 - k || c > (int)im.getNbCol()-1 - k) // if on border of the image just copy the original pixel
+      if (r < k || c < k || r > (int)im.getNbRow() - 1 - k || c > (int)im.getNbCol() - 1 - k) // if on border of the image just copy the original pixel
       {
         preprocessed[r][c] = originale[r][c];
       }
@@ -119,7 +124,7 @@ int main(int argc, char *argv[])
             }
           }
           sort(valPixs.begin(), valPixs.end());
-          newValPix = valPixs.at(((valPixs.size()) - 1) / 2); 
+          newValPix = valPixs.at(((valPixs.size()) - 1) / 2);
           preprocessed[r][c] = newValPix;
         }
         else
@@ -129,7 +134,6 @@ int main(int argc, char *argv[])
       }
     }
   }
-
 
   superposed = preprocessed;
   Fsuperposed->Afficher(superposed);
@@ -185,7 +189,17 @@ int main(int argc, char *argv[])
       imAgent->draw(im);
     }
 
-    if (cimp == 's')
+    vector<Agent *> n;
+    getAllAgents("NodeAgent", n);
+    size_t NbNodeAgents = n.size();
+
+    for (size_t indV = 0; indV < NbNodeAgents; indV++)
+    {
+      NodeAgent *imAgent = (NodeAgent *)n[indV];
+      imAgent->draw(im);
+    }
+
+    if (cimp == 's' || pixelExplored == (int)(im.getNbCol() * im.getNbRow()))
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
                "Resultats/%s_Environment_%d.ppm",
@@ -194,7 +208,7 @@ int main(int argc, char *argv[])
       indSauvegardeIm++;
     }
 
-    if (cimr == 's')
+    if (cimr == 's' || pixelExplored == (int)(im.getNbCol() * im.getNbRow()))
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
                "Resultats/%s_Resultat_%d.ppm",
@@ -203,7 +217,7 @@ int main(int argc, char *argv[])
       indSauvegardeImResultat++;
     }
 
-    if (cims == 's')
+    if (cims == 's' || pixelExplored == (int)(im.getNbCol() * im.getNbRow()))
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
                "Resultats/%s_Superposed_%d.ppm",
@@ -212,13 +226,20 @@ int main(int argc, char *argv[])
       indSauvegardeImSuperposed++;
     }
 
-    if (cimr == 'q' || cimp == 'q' || cims == 'q')
+    if (cimr == 'p' || cimp == 'p' || cims == 'p')
+    {
+      cout << float(pixelExplored * 100 / (im.getNbCol() * im.getNbRow())) << "% of the image explored" << endl;
+    }
+    if (cimr == 'q' || cimp == 'q' || cims == 'q' || pixelExplored == (int)(im.getNbCol() * im.getNbRow()))
+    {
+      cout << float(pixelExplored * 100 / (im.getNbCol() * im.getNbRow())) << "% of the image explored" << endl;
       break;
+    }
   }
 
   delete (Fpreprocessed);
   delete (Fresultat);
   delete (Fsuperposed);
-  
+
   return (0);
 }

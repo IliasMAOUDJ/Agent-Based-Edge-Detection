@@ -52,7 +52,10 @@ void KirschAgent::live(double dt)
     
     kirschOperator();
     if (_sys->explored[_row][_col] != 255)
+     {
+        _sys->pixelExplored++;
         _sys->explored[_row][_col] = 255;
+     }
     //-- Calcul nouvelle position
 
     size_t newRow, newCol;
@@ -67,9 +70,6 @@ void KirschAgent::live(double dt)
         _dir = randomMinMax(1, 8);                                 // Il est remis
         _row = randomMinMax(2, _sys->preprocessed.getNbRow() - 2); // aleatoirement
         _col = randomMinMax(2, _sys->preprocessed.getNbCol() - 2); // dans l'image
-
-        // On peut aussi faire : new ImAgent(_sys);
-        // puis                : delete this;
     }
 }
 

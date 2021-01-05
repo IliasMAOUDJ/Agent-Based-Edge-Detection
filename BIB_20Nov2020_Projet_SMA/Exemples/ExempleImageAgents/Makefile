@@ -20,8 +20,11 @@ all: $(TARGET)
 #------------ Les fichiers sources --
 
 FILESprogX=progX.cpp \
+	NodeAgent.cpp \
 	Edge_detection.cpp \
-	EdgeFollowingAgent.cpp
+	EdgeFollowingAgent.cpp \
+	MessageDist.cpp
+	 
 
 ###############################################################
 

@@ -50,7 +50,11 @@ void EdgeFollowingAgent::live(double dt)
               // Ajout de la position actuelle à la liste des positions explorées
 
     if (_sys->explored[_row][_col] != 255)
+    {
         _sys->explored[_row][_col] = 255;
+        _sys->pixelExplored++;
+    }
+    
 
     _explored.push_back(make_tuple(_row, _col));
 
@@ -60,7 +64,7 @@ void EdgeFollowingAgent::live(double dt)
     getNewPos(_row, _col);
 
     tuple<int, int> currentPos = make_tuple(_row, _col);
-    if (Contains(_explored, currentPos) || backtrack)
+    if (Contains(_explored, currentPos) || backtrack || _sys->explored[_row][_col] == 255)
     {
 		new NodeAgent(_sys, _row, _col);
         delete this;
@@ -170,11 +174,13 @@ bool EdgeFollowingAgent::followEdge()
         }
         else if (abs(val) == abs(minVal))
         {
+            /*
             cout << "[" << _row << "][" << _col << "]" << endl;
             cout << "for i= " << i << " and _dir=" << _dir << "\t value is " << val <<  endl;
             cout << "(" << (int)_sys->preprocessed[_row - 1][_col - 1] << "\t" << (int)_sys->preprocessed[_row - 1][_col] << "\t" << (int)_sys->preprocessed[_row - 1][_col + 1] << ")" << endl
                  << "(" << (int)_sys->preprocessed[_row][_col - 1] << "\t" << (int)_sys->preprocessed[_row][_col] << "\t" << (int)_sys->preprocessed[_row][_col + 1] << ")" << endl
                  << "(" << (int)_sys->preprocessed[_row + 1][_col - 1] << "\t" <<(int) _sys->preprocessed[_row + 1][_col] << "\t" << (int)_sys->preprocessed[_row + 1][_col + 1] << ")" << endl;
+                 */
         }
         
     }

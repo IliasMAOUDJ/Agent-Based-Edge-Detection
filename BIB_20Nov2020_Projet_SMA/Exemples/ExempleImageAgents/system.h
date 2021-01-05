@@ -10,6 +10,7 @@ typedef struct {
                 Image resultat;
                 Image explored;
                 ImageRVB superposed;
+                int pixelExplored;
                }                                  System;
 
 #endif // _SYSTEM_H_
