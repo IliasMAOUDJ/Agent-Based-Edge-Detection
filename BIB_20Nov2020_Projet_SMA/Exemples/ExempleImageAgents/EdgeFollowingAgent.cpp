@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "EdgeFollowingAgent.h"
+#include "NodeAgent.h"
 #include <iostream>  // Fichier ex.cpp
 #include <algorithm> // std::sort
 #include <vector>    // std::vector
@@ -45,7 +46,9 @@ EdgeFollowingAgent::~EdgeFollowingAgent(void)
 void EdgeFollowingAgent::live(double dt)
 {
     (void)dt; // Pour eviter un warning si pas utilise
-    // Ajout de la position actuelle à la liste des positions explorées
+    // Ajout de la position actuelle à la liste des positions explorées$
+    if(_sys->explored[_row][_col] != 255)
+        _sys->explored[_row][_col] = 0;
     _explored.push_back(make_tuple(_row,_col));
 
     bool backtrack = followEdge();
@@ -55,6 +58,7 @@ void EdgeFollowingAgent::live(double dt)
     tuple<int, int> currentPos = make_tuple(_row,_col);
     if(Contains(_explored, currentPos) || backtrack)
     {
+		new NodeAgent(_sys, _row, _col);
         delete this;
     }
 }
@@ -76,57 +80,57 @@ bool EdgeFollowingAgent::followEdge(void)
     {
         if (i == 3)
         {
-            val = (5 * _sys->originale[_row - 1][_col - 1] + 5 * _sys->originale[_row - 1][_col] + 5 * _sys->originale[_row - 1][_col + 1]     // [-3   -3  5]
-                   - 3 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] - 3 * _sys->originale[_row][_col + 1]               // [-3  0 5]
-                   - 3 * _sys->originale[_row + 1][_col - 1] - 3 * _sys->originale[_row + 1][_col] - 3 * _sys->originale[_row + 1][_col + 1]); //[-3 -3 5]
+            val = (5 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]     // [-3   -3  5]
+                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 5]
         }                                                                                                                                      // 1
         if (i ==4)
         {
-            val = (-3 * _sys->originale[_row - 1][_col - 1] + 5 * _sys->originale[_row - 1][_col] + 5 * _sys->originale[_row - 1][_col + 1]    // [-3   -3  5]
-                   - 3 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] + 5 * _sys->originale[_row][_col + 1]               // [-3  0 5]
-                   - 3 * _sys->originale[_row + 1][_col - 1] - 3 * _sys->originale[_row + 1][_col] - 3 * _sys->originale[_row + 1][_col + 1]); //[-3 -3 5]
+            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  5]
+                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] + 5 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 5]
 
         } // 2
         if (i == 5)
         {
-            val = (-3 * _sys->originale[_row - 1][_col - 1] - 3 * _sys->originale[_row - 1][_col] + 5 * _sys->originale[_row - 1][_col + 1]    // [-3   -3  5]
-                   - 3 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] + 5 * _sys->originale[_row][_col + 1]               // [-3  0 5]
-                   - 3 * _sys->originale[_row + 1][_col - 1] - 3 * _sys->originale[_row + 1][_col] + 5 * _sys->originale[_row + 1][_col + 1]); //[-3 -3 5]
+            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] - 3 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  5]
+                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] + 5 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] + 5 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 5]
 
         } // 3
         if (i == 6)
         {
-            val = (-3 * _sys->originale[_row - 1][_col - 1] - 3 * _sys->originale[_row - 1][_col] - 3 * _sys->originale[_row - 1][_col + 1]    // [-3   -3  -3]
-                   - 3 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] + 5 * _sys->originale[_row][_col + 1]               // [-3  0 5]
-                   - 3 * _sys->originale[_row + 1][_col - 1] + 5 * _sys->originale[_row + 1][_col] + 5 * _sys->originale[_row + 1][_col + 1]); //[-3 5 5]
+            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] - 3 * _sys->preprocessed[_row - 1][_col] - 3 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  -3]
+                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] + 5 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] + 5 * _sys->preprocessed[_row + 1][_col] + 5 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 5 5]
 
         } // 4
         if (i == 7)
         {
-            val = (-3 * _sys->originale[_row - 1][_col - 1] - 3 * _sys->originale[_row - 1][_col] - 3 * _sys->originale[_row - 1][_col + 1]    // [-3   -3  -3]
-                   - 3 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] - 3 * _sys->originale[_row][_col + 1]               // [-3  0 -3]
-                   + 5 * _sys->originale[_row + 1][_col - 1] + 5 * _sys->originale[_row + 1][_col] + 5 * _sys->originale[_row + 1][_col + 1]); //[5 5 5]
+            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] - 3 * _sys->preprocessed[_row - 1][_col] - 3 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  -3]
+                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [-3  0 -3]
+                   + 5 * _sys->preprocessed[_row + 1][_col - 1] + 5 * _sys->preprocessed[_row + 1][_col] + 5 * _sys->preprocessed[_row + 1][_col + 1]); //[5 5 5]
 
         } // 5
         if (i == 0)
         {
-            val = (-3 * _sys->originale[_row - 1][_col - 1] - 3 * _sys->originale[_row - 1][_col] - 3 * _sys->originale[_row - 1][_col + 1]    // [-3   -3  -3]
-                   + 5 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] - 3 * _sys->originale[_row][_col + 1]               // [5  0 -3]
-                   + 5 * _sys->originale[_row + 1][_col - 1] + 5 * _sys->originale[_row + 1][_col] - 3 * _sys->originale[_row + 1][_col + 1]); //[5 5 -3]
+            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] - 3 * _sys->preprocessed[_row - 1][_col] - 3 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  -3]
+                   + 5 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [5  0 -3]
+                   + 5 * _sys->preprocessed[_row + 1][_col - 1] + 5 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[5 5 -3]
 
         } // 6
         if (i == 1)
         {
-            val = (5 * _sys->originale[_row - 1][_col - 1] - 3 * _sys->originale[_row - 1][_col] - 3 * _sys->originale[_row - 1][_col + 1]     // [5   -3  -3]
-                   + 5 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] - 3 * _sys->originale[_row][_col + 1]               // [5  0 -3]
-                   + 5 * _sys->originale[_row + 1][_col - 1] - 3 * _sys->originale[_row + 1][_col] - 3 * _sys->originale[_row + 1][_col + 1]); //[5 -3 -3]
+            val = (5 * _sys->preprocessed[_row - 1][_col - 1] - 3 * _sys->preprocessed[_row - 1][_col] - 3 * _sys->preprocessed[_row - 1][_col + 1]     // [5   -3  -3]
+                   + 5 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [5  0 -3]
+                   + 5 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[5 -3 -3]
 
         } // 7
         if (i == 2)
         {
-            val = (5 * _sys->originale[_row - 1][_col - 1] + 5 * _sys->originale[_row - 1][_col] - 3 * _sys->originale[_row - 1][_col + 1]     // [5   5  -3]
-                   + 5 * _sys->originale[_row][_col - 1] + 0 * _sys->originale[_row][_col] - 3 * _sys->originale[_row][_col + 1]               // [5  0 -3]
-                   - 3 * _sys->originale[_row + 1][_col - 1] - 3 * _sys->originale[_row + 1][_col] - 3 * _sys->originale[_row + 1][_col + 1]); //[-3 -3 -3]
+            val = (5 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] - 3 * _sys->preprocessed[_row - 1][_col + 1]     // [5   5  -3]
+                   + 5 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [5  0 -3]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 -3]
 
         } // 8
 
@@ -144,7 +148,7 @@ bool EdgeFollowingAgent::followEdge(void)
         }
     }
 
-    if(abs(minVal)>180)
+    if(abs(minVal)/15>1)
     {
         if(minVal<0)
         {
@@ -155,6 +159,12 @@ bool EdgeFollowingAgent::followEdge(void)
             _sys->resultat[_row][_col] = 255;
         }       
     }
+    /*
+    else if(abs(minVal)>160)
+    {
+        _sys->resultat[_row][_col] = 180;
+    }
+    */
     
     if(origin == (_dir+4)%8)
     {
@@ -237,9 +247,9 @@ bool EdgeFollowingAgent::getPosDir(size_t &row, size_t &col) const // true si da
 
     bool in = true;
 
-    if (dirRow < 1 || dirRow >= (int)(_sys->originale.getNbRow()-1))
+    if (dirRow < 1 || dirRow >= (int)(_sys->preprocessed.getNbRow()-1))
         in = false;
-    if (dirCol < 1 || dirCol >= (int)(_sys->originale.getNbCol()-1))
+    if (dirCol < 1 || dirCol >= (int)(_sys->preprocessed.getNbCol()-1))
         in = false;
 
     if (in)
