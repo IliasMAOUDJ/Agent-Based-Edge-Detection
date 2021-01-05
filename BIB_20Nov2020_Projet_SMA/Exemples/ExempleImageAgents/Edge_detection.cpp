@@ -12,8 +12,8 @@ KirschAgent::KirschAgent(System *sys) : Agent()
     newAgent();
     _sys = sys;
     _dir = randomMinMax(1, 8);
-    _row = randomMinMax(1, _sys-> preprocessed.getNbRow() - 2);
-    _col = randomMinMax(1, _sys-> preprocessed.getNbCol() - 2);
+    _row = randomMinMax(1, _sys->preprocessed.getNbRow() - 2);
+    _col = randomMinMax(1, _sys->preprocessed.getNbCol() - 2);
 }
 
 //--
@@ -48,9 +48,11 @@ void KirschAgent::live(double dt)
 
     // "Comportement" d'un Agent de la classe KirschAgent
     //cout << "My name is : " << getName() << endl;
-
+    
+    
     kirschOperator();
-
+    if (_sys->explored[_row][_col] != 255)
+        _sys->explored[_row][_col] = 255;
     //-- Calcul nouvelle position
 
     size_t newRow, newCol;
@@ -61,11 +63,10 @@ void KirschAgent::live(double dt)
         _col = newCol;
     }
     else
-    { // L'agent est arrive sur un bord de l'image
-
-        _dir = randomMinMax(1, 8);                              // Il est remis
-        _row = randomMinMax(2, _sys-> preprocessed.getNbRow() - 2); // aleatoirement
-        _col = randomMinMax(2, _sys-> preprocessed.getNbCol() - 2); // dans l'image
+    {                                                              // L'agent est arrive sur un bord de l'image
+        _dir = randomMinMax(1, 8);                                 // Il est remis
+        _row = randomMinMax(2, _sys->preprocessed.getNbRow() - 2); // aleatoirement
+        _col = randomMinMax(2, _sys->preprocessed.getNbCol() - 2); // dans l'image
 
         // On peut aussi faire : new ImAgent(_sys);
         // puis                : delete this;
@@ -77,84 +78,82 @@ void KirschAgent::kirschOperator(void)
     // 8 1 2
     // 7 X 3
     // 6 5 4
-    octet val = 0;
+    int val = 0;
 
-    if (_row > 1 && _row < _sys-> preprocessed.getNbRow() - 1)
+    if (_row > 0 && _row < _sys->preprocessed.getNbRow()-1)
     {
 
         switch (_dir)
         {
         case 1:
         {
-            val = (5 * _sys-> preprocessed[_row - 1][_col - 1] + 5 * _sys-> preprocessed[_row - 1][_col] + 5 * _sys-> preprocessed[_row - 1][_col + 1] // [-3   -3  5]
-                   - 3 * _sys-> preprocessed[_row][_col - 1] + 0 * _sys-> preprocessed[_row][_col] - 3 * _sys-> preprocessed[_row][_col + 1]           // [-3  0 5]
-                   - 3 * _sys-> preprocessed[_row + 1][_col - 1] - 3 * _sys-> preprocessed[_row + 1][_col] - 3 * _sys-> preprocessed[_row + 1][_col + 1])  ; //[-3 -3 5]
+            val = (5 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]     // [-3   -3  5]
+                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 5]
 
             break;
         } // 1
         case 2:
         {
-            val = (-3 * _sys-> preprocessed[_row - 1][_col - 1] + 5 * _sys-> preprocessed[_row - 1][_col] + 5 * _sys-> preprocessed[_row - 1][_col + 1] // [-3   -3  5]
-                   - 3 * _sys-> preprocessed[_row][_col - 1] + 0 * _sys-> preprocessed[_row][_col] + 5 * _sys-> preprocessed[_row][_col + 1]            // [-3  0 5]
-                   - 3 * _sys-> preprocessed[_row + 1][_col - 1] - 3 * _sys-> preprocessed[_row + 1][_col] - 3 * _sys-> preprocessed[_row + 1][_col + 1])  ; //[-3 -3 5]
+            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  5]
+                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] + 5 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 5]
             break;
         } // 2
         case 3:
         {
-            val = (-3 * _sys-> preprocessed[_row - 1][_col - 1] - 3 * _sys-> preprocessed[_row - 1][_col] + 5 * _sys-> preprocessed[_row - 1][_col + 1] // [-3   -3  5]
-                   - 3 * _sys-> preprocessed[_row][_col - 1] + 0 * _sys-> preprocessed[_row][_col] + 5 * _sys-> preprocessed[_row][_col + 1]            // [-3  0 5]
-                   - 3 * _sys-> preprocessed[_row + 1][_col - 1] - 3 * _sys-> preprocessed[_row + 1][_col] + 5 * _sys-> preprocessed[_row + 1][_col + 1])  ; //[-3 -3 5]
+            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] - 3 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  5]
+                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] + 5 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] + 5 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 5]
 
             break;
         } // 3
         case 4:
         {
-            val = (-3 * _sys-> preprocessed[_row - 1][_col - 1] - 3 * _sys-> preprocessed[_row - 1][_col] - 3 * _sys-> preprocessed[_row - 1][_col + 1] // [-3   -3  -3]
-                   - 3 * _sys-> preprocessed[_row][_col - 1] + 0 * _sys-> preprocessed[_row][_col] + 5 * _sys-> preprocessed[_row][_col + 1]            // [-3  0 5]
-                   - 3 * _sys-> preprocessed[_row + 1][_col - 1] + 5 * _sys-> preprocessed[_row + 1][_col] + 5 * _sys-> preprocessed[_row + 1][_col + 1])  ; //[-3 5 5]
+            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] - 3 * _sys->preprocessed[_row - 1][_col] - 3 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  -3]
+                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] + 5 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] + 5 * _sys->preprocessed[_row + 1][_col] + 5 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 5 5]
 
             break;
         } // 4
         case 5:
         {
-            val = (-3 * _sys-> preprocessed[_row - 1][_col - 1] - 3 * _sys-> preprocessed[_row - 1][_col] - 3 * _sys-> preprocessed[_row - 1][_col + 1] // [-3   -3  -3]
-                   - 3 * _sys-> preprocessed[_row][_col - 1] + 0 * _sys-> preprocessed[_row][_col] - 3 * _sys-> preprocessed[_row][_col + 1]            // [-3  0 5]
-                   + 5 * _sys-> preprocessed[_row + 1][_col - 1] + 5 * _sys-> preprocessed[_row + 1][_col] + 5 * _sys-> preprocessed[_row + 1][_col + 1])  ; //[-3 5 5]
+            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] - 3 * _sys->preprocessed[_row - 1][_col] - 3 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  -3]
+                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
+                   + 5 * _sys->preprocessed[_row + 1][_col - 1] + 5 * _sys->preprocessed[_row + 1][_col] + 5 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 5 5]
 
             break;
         } // 5
         case 6:
         {
-            val = (-3 * _sys-> preprocessed[_row - 1][_col - 1] - 3 * _sys-> preprocessed[_row - 1][_col] - 3 * _sys-> preprocessed[_row - 1][_col + 1] // [-3   -3  -3]
-                   + 5 * _sys-> preprocessed[_row][_col - 1] + 0 * _sys-> preprocessed[_row][_col] - 3 * _sys-> preprocessed[_row][_col + 1]            // [-3  0 -3]
-                   + 5 * _sys-> preprocessed[_row + 1][_col - 1] + 5 * _sys-> preprocessed[_row + 1][_col] - 3 * _sys-> preprocessed[_row + 1][_col + 1])  ; //[5 5 5]
+            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] - 3 * _sys->preprocessed[_row - 1][_col] - 3 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  -3]
+                   + 5 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [-3  0 -3]
+                   + 5 * _sys->preprocessed[_row + 1][_col - 1] + 5 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[5 5 5]
 
             break;
         } // 6
         case 7:
         {
-            val = (5 * _sys-> preprocessed[_row - 1][_col - 1] - 3 * _sys-> preprocessed[_row - 1][_col] - 3 * _sys-> preprocessed[_row - 1][_col + 1] // [-3   -3  -3]
-                   + 5 * _sys-> preprocessed[_row][_col - 1] + 0 * _sys-> preprocessed[_row][_col] - 3 * _sys-> preprocessed[_row][_col + 1]           // [-3  0 -3]
-                   + 5 * _sys-> preprocessed[_row + 1][_col - 1] - 3 * _sys-> preprocessed[_row + 1][_col] - 3 * _sys-> preprocessed[_row + 1][_col + 1])  ; //[5 5 5]
+            val = (5 * _sys->preprocessed[_row - 1][_col - 1] - 3 * _sys->preprocessed[_row - 1][_col] - 3 * _sys->preprocessed[_row - 1][_col + 1]     // [-3   -3  -3]
+                   + 5 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [-3  0 -3]
+                   + 5 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[5 5 5]
 
             break;
         } // 7
         default:
         {
-            val = (5 * _sys-> preprocessed[_row - 1][_col - 1] + 5 * _sys-> preprocessed[_row - 1][_col] - 3 * _sys-> preprocessed[_row - 1][_col + 1] // [-3   -3  -3]
-                   + 5 * _sys-> preprocessed[_row][_col - 1] + 0 * _sys-> preprocessed[_row][_col] - 3 * _sys-> preprocessed[_row][_col + 1]           // [-3  0 -3]
-                   - 3 * _sys-> preprocessed[_row + 1][_col - 1] - 3 * _sys-> preprocessed[_row + 1][_col] - 3 * _sys-> preprocessed[_row + 1][_col + 1])  ; //[5 5 5]
+            val = (5 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] - 3 * _sys->preprocessed[_row - 1][_col + 1]     // [-3   -3  -3]
+                   + 5 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [-3  0 -3]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[5 5 5]
 
             break;
         } // 8
         }
     }
-
-    if (abs(val) > 200)
-    {
-
+    
+    if (abs(val)/15 > 15 && _sys->explored[_row][_col] != 255)
+    {        
         new EdgeFollowingAgent(_sys, _row, _col);
-        //delete this;
     }
 }
 //--
@@ -231,9 +230,9 @@ bool KirschAgent::getPosDir(size_t &row, size_t &col) const // true si dans l'im
 
     bool in = true;
 
-    if (dirRow < 0 || dirRow >= (int)(_sys-> preprocessed.getNbRow()))
+    if (dirRow < 0 || dirRow >= (int)(_sys->preprocessed.getNbRow()))
         in = false;
-    if (dirCol < 0 || dirCol >= (int)(_sys-> preprocessed.getNbCol()))
+    if (dirCol < 0 || dirCol >= (int)(_sys->preprocessed.getNbCol()))
         in = false;
 
     if (in)
