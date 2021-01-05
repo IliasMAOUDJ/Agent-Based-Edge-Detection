@@ -9,7 +9,7 @@ typedef struct {
                 Image preprocessed;
                 Image resultat;
                 Image explored;
-                Image postprocessed;
+                ImageRVB superposed;
                }                                  System;
 
 #endif // _SYSTEM_H_
