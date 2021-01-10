@@ -82,8 +82,8 @@ void NodeAgent::live(double dt)
 
 		if (message->getResponse()) {
 			receive_response = true;
-			float d = (float)sqrt(((message->getRow()-_row)*(message->getRow()-_row)) + (float)((message->getCol()-_col)*(message->getCol()-_col)));
-			if (d < 5) {
+			float d = (float)(((message->getRow()-_row)*(message->getRow()-_row)) + (float)((message->getCol()-_col)*(message->getCol()-_col)));
+			if (d < 25) {
 				if (firstTime) {
 					firstTime = false;
 					bestDist = d;
@@ -110,11 +110,11 @@ void NodeAgent::live(double dt)
 			//cout << col << endl;
 			//cout << _row << endl;
 			//cout << _col << endl;
-			float dist = (float)sqrt(((row-_row)*(row-_row)) + (float)((col-_col)*(col-_col)));
+			float dist = (float)(((row-_row)*(row-_row)) + (float)((col-_col)*(col-_col)));
 			//cout << dist << endl;
 			//cout << "=====================================" << endl;
 
-			if (dist < 5) {
+			if (dist < 25) {
 				/*cout << prefixe << " => I reply to " << emitterName
 			              << " with value "    << _row
 			              << " and " << _col << endl;*/
@@ -158,6 +158,7 @@ void NodeAgent::drawLine(size_t r1, size_t c1, size_t r2, size_t c2) {
 	    	r1 = (int) r1;
 	    	c1 = (int) c1;
 	    	_sys->resultat[r1][c1] = 255;
+            _sys->superposed.writePix(_row, _col, 0, 255, 0);
 	    	r1 += r;
 	    	c1 += c;
 	    }

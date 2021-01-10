@@ -66,7 +66,10 @@ void EdgeFollowingAgent::live(double dt)
     tuple<int, int> currentPos = make_tuple(_row, _col);
     if (Contains(_explored, currentPos) || backtrack || _sys->explored[_row][_col] == 255)
     {
+        if(backtrack || Contains(_explored, currentPos))
+        {
 		new NodeAgent(_sys, _row, _col);
+        }
         delete this;
     }
 }
@@ -189,13 +192,13 @@ bool EdgeFollowingAgent::followEdge()
     {
         if (minVal < 0)
         {
-            _sys->resultat[_row][_col] = 255;
+            _sys->resultat[_row][_col] = 0;
             _sys->superposed.writePix(_row, _col, 0, 0, 255);
         }
 
         else if (minVal > 0)
         {
-            _sys->resultat[_row][_col] = 0;
+            _sys->resultat[_row][_col] = 255;
             _sys->superposed.writePix(_row, _col, 255, 0, 0);
         }
     }
