@@ -44,9 +44,8 @@ protected:
     // display: a appeler dans une classe derivee      // display est une
     virtual void display(ostream &os) const; // methode appelee
                                              // dans operator<<
-    bool followEdge();
+    void followEdge();
     map<int, int> computeLocalHist(size_t k);
-    bool Contains(const std::vector<tuple<int, int>> &list, tuple<int, int> x);
 
     // isEqualTo: a appeler dans une classe derivee (dans operator==)
     bool isEqualTo(const EdgeFollowingAgent &anI) const;
@@ -61,7 +60,6 @@ private:
 
     size_t _row;
     size_t _col;
-    vector<tuple<int, int>> _explored;
 
 private:
     // Methodes privees d'allocation/desallocation

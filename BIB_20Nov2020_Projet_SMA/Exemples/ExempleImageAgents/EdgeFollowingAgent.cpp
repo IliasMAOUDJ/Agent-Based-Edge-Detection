@@ -15,7 +15,6 @@ EdgeFollowingAgent::EdgeFollowingAgent(System *sys, size_t row, size_t col) : Ag
     _dir = 0;
     _row = row;
     _col = col;
-    _explored.push_back(make_tuple(row, col));
 }
 
 //--
@@ -54,39 +53,25 @@ void EdgeFollowingAgent::live(double dt)
         _sys->explored[_row][_col] = 255;
         _sys->pixelExplored++;
     }
-    
-
-    _explored.push_back(make_tuple(_row, _col));
-
     //map<int, int> hist = computeLocalHist(3);
-    bool backtrack = followEdge();
+    followEdge();
     //-- Calcul nouvelle position
     getNewPos(_row, _col);
-
-    tuple<int, int> currentPos = make_tuple(_row, _col);
-    if (Contains(_explored, currentPos) || backtrack || _sys->explored[_row][_col] == 255)
+    if (_sys->explored[_row][_col] == 255)
     {
-        if(backtrack || Contains(_explored, currentPos))
-        {
 		new NodeAgent(_sys, _row, _col);
-        }
         delete this;
     }
 }
 
-bool EdgeFollowingAgent::Contains(const std::vector<tuple<int, int>> &list, tuple<int, int> x)
-{
-    return std::find(list.begin(), list.end(), x) != list.end();
-}
 
-bool EdgeFollowingAgent::followEdge()
+void EdgeFollowingAgent::followEdge()
 {
     // 8 1 2
     // 7 X 3
     // 6 5 4
     int val = 0;
     int minVal = 0;
-    int origin = _dir;
     /*
     int cdf = 0;
     // hist: - first is pixel value [0;255]
@@ -203,12 +188,6 @@ bool EdgeFollowingAgent::followEdge()
         }
     }
 
-    if (origin == (_dir + 4) % 8)
-    {
-        return true;
-    }
-
-    return false;
 }
 //--
 
