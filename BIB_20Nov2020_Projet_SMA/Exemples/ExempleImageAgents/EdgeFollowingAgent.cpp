@@ -91,9 +91,9 @@ void EdgeFollowingAgent::followEdge()
         else
         {
             cdf += item.second;
-            float D = (cdf - cdfmin);
-            float N = (k * k) - cdfmin;
-            normalized_hist[item.first] = (int)(D / N * 255);
+            float N = (cdf - cdfmin);
+            float D = (k * k) - cdfmin;
+            normalized_hist[item.first] = (int)(N / D * 255);
         }
     }
     */
@@ -101,15 +101,15 @@ void EdgeFollowingAgent::followEdge()
     {
         if (i == 3)
         {
-            val = (5 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]     // [-3   -3  5]
-                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
-                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 5]
+            val = (5 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]     // [5   5  5]
+                   - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] - 3 * _sys->preprocessed[_row][_col + 1]               // [-3  0 -3]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 -3]
         }                                                                                                                                               // 1
         if (i == 4)
         {
-            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   -3  5]
+            val = (-3 * _sys->preprocessed[_row - 1][_col - 1] + 5 * _sys->preprocessed[_row - 1][_col] + 5 * _sys->preprocessed[_row - 1][_col + 1]    // [-3   5  5]
                    - 3 * _sys->preprocessed[_row][_col - 1] + 0 * _sys->preprocessed[_row][_col] + 5 * _sys->preprocessed[_row][_col + 1]               // [-3  0 5]
-                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 5]
+                   - 3 * _sys->preprocessed[_row + 1][_col - 1] - 3 * _sys->preprocessed[_row + 1][_col] - 3 * _sys->preprocessed[_row + 1][_col + 1]); //[-3 -3 -3]
 
         } // 2
         if (i == 5)
