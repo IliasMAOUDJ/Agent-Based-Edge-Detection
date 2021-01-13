@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  superposed = preprocessed;
+  //superposed = preprocessed;
   Fsuperposed->Afficher(superposed);
   Fsuperposed->setLabel("SUPERPOSED");
   //--
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
       imAgent->draw(im);
     }
 
-    if (cimp == 's' || pixelExplored == (int)(im.getNbCol() * im.getNbRow()))
+    if (cimp == 's' || pixelExplored > (int)(im.getNbCol() * im.getNbRow()))
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
                "Resultats/%s_Environment_%d.ppm",
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
       indSauvegardeIm++;
     }
 
-    if (cimr == 's' || pixelExplored == (int)(im.getNbCol() * im.getNbRow()))
+    if (cimr == 's' || pixelExplored > (int)(im.getNbCol() * im.getNbRow()))
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
                "Resultats/%s_Resultat_%d.ppm",
@@ -217,7 +217,7 @@ int main(int argc, char *argv[])
       indSauvegardeImResultat++;
     }
 
-    if (cims == 's' || pixelExplored == (int)(im.getNbCol() * im.getNbRow()))
+    if (cims == 's' || pixelExplored > (int)(im.getNbCol() * im.getNbRow()))
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
                "Resultats/%s_Superposed_%d.ppm",
@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
     {
       cout << float(pixelExplored * 100 / (im.getNbCol() * im.getNbRow())) << "% of the image explored" << endl;
     }
-    if (cimr == 'q' || cimp == 'q' || cims == 'q' || pixelExplored == (int)(im.getNbCol() * im.getNbRow()))
+    if (cimr == 'q' || cimp == 'q' || cims == 'q' || pixelExplored > (int)(im.getNbCol() * im.getNbRow()))
     {
       cout << float(pixelExplored * 100 / (im.getNbCol() * im.getNbRow())) << "% of the image explored" << endl;
       break;

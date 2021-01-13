@@ -173,18 +173,18 @@ void EdgeFollowingAgent::followEdge()
         
     }
 
-    if (abs(minVal) / 15 > 10)
+    if (abs(minVal) / 15 > 20)
     {
         if (minVal < 0)
         {
             _sys->resultat[_row][_col] = 0;
-            _sys->superposed.writePix(_row, _col, 0, 0, 255);
+            _sys->superposed.writePix(_row, _col, 255, 0, 0);
         }
 
         else if (minVal > 0)
         {
             _sys->resultat[_row][_col] = 255;
-            _sys->superposed.writePix(_row, _col, 255, 0, 0);
+            _sys->superposed.writePix(_row, _col, 255, 255, 255);
         }
     }
 

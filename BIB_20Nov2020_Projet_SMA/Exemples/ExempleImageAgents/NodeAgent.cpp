@@ -157,6 +157,8 @@ void NodeAgent::drawLine(size_t r1, size_t c1, size_t r2, size_t c2) {
 	    for (int i=0; i<max;i++) {
 	    	r1 = (int) r1;
 	    	c1 = (int) c1;
+            _sys->pixelExplored++;
+            _sys->explored[_row][_col] = 255;
 	    	_sys->resultat[r1][c1] = 255;
             _sys->superposed.writePix(_row, _col, 0, 255, 0);
 	    	r1 += r;
