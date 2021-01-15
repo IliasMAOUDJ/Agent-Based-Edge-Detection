@@ -151,7 +151,7 @@ void KirschAgent::kirschOperator(void)
         }
     }
     
-    if (abs(val)/15 > 15 && _sys->explored[_row][_col] != 255)
+    if (abs(val)/15 > 10 && _sys->explored[_row][_col] != 255)
     {        
         new EdgeFollowingAgent(_sys, _row, _col);
     }

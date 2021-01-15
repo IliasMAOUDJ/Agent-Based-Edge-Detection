@@ -173,7 +173,7 @@ void EdgeFollowingAgent::followEdge()
         
     }
 
-    if (abs(minVal) / 15 > 20)
+    if (abs(minVal) / 15 > 10)
     {
         if (minVal < 0)
         {
@@ -297,19 +297,19 @@ bool EdgeFollowingAgent::getPosDir(size_t &row, size_t &col) const // true si da
 //--
 void EdgeFollowingAgent::draw(Image &im)
 {
-    octet val = 255;
+    octet val = 0;
 
-    //im(_row - 1, _col - 1) = val;
-    //im(_row - 1, _col) = val;
-    //im(_row - 1, _col + 1) = val;
+    im(_row - 1, _col - 1) = 255-val;
+    im(_row - 1, _col) = 255-val;
+    im(_row - 1, _col + 1) = 255-val;
 
-    //im(_row, _col - 1) = val;
+    im(_row, _col - 1) = 255-val;
     im(_row, _col) = val;
-    //im(_row, _col + 1) = val;
+    im(_row, _col + 1) = 255-val;
 
-    //im(_row + 1, _col - 1) = val;
-    //im(_row + 1, _col) = val;
-    //im(_row + 1, _col + 1) = val;
+    im(_row + 1, _col - 1) = 255-val;
+    im(_row + 1, _col) = 255-val;
+    im(_row + 1, _col + 1) = 255-val;
 
     size_t dirRow, dirCol;
 

@@ -71,16 +71,18 @@ int main(int argc, char *argv[])
   //--
 
   //XAffichage *Fim = new XAffichage(im.getNbRow(), im.getNbCol());
+  
   XAffichage *Fpreprocessed = new XAffichage(preprocessed.getNbRow(),
                                              preprocessed.getNbCol());
+  
   XAffichage *Fresultat = new XAffichage(resultat.getNbRow(),
                                          resultat.getNbCol());
 
   XAffichage *Fsuperposed = new XAffichage(superposed.getNbRow(), superposed.getNbCol());
 
-  Fpreprocessed->Afficher(preprocessed);
-  Fpreprocessed->XEvenement(preprocessed);
-  Fpreprocessed->setLabel("ENVIRONMENT");
+  //Fpreprocessed->Afficher(preprocessed);
+  //Fpreprocessed->XEvenement(preprocessed);
+  //Fpreprocessed->setLabel("ENVIRONMENT");
 
   Fresultat->Afficher(resultat);
   Fresultat->XEvenement(resultat);
@@ -135,12 +137,12 @@ int main(int argc, char *argv[])
     }
   }
 
-  //superposed = preprocessed;
+  superposed = preprocessed;
   Fsuperposed->Afficher(superposed);
   Fsuperposed->setLabel("SUPERPOSED");
   //--
 
-  int indSauvegardeIm = 1;
+  //int indSauvegardeIm = 1;
   int indSauvegardeImResultat = 1;
   int indSauvegardeImSuperposed = 1;
   char nomSauvegarde[2048];
@@ -150,21 +152,22 @@ int main(int argc, char *argv[])
 
   while (1)
   {
-    char cimr, cimp, cims;
+    char cimr, cims;
+    //char cimp;
 
-    Fpreprocessed->Afficher(im);
-    cimp = Fpreprocessed->XEvenement(im);
-    cimp = tolower(cimp);
+    //Fpreprocessed->Afficher(preprocessed);
+    //cimp = Fpreprocessed->XEvenement(preprocessed);
+    //cimp = tolower(cimp);
 
-    Fresultat->Afficher(resultat);
-    cimr = Fresultat->XEvenement(resultat);
+    Fresultat->Afficher(im);
+    cimr = Fresultat->XEvenement(im);
     cimr = tolower(cimr);
 
     Fsuperposed->Afficher(superposed);
     cims = Fsuperposed->XEvenement(superposed);
     cims = tolower(cims);
 
-    im = preprocessed;
+    im = resultat;
 
     sched.cycle();
 
@@ -198,7 +201,7 @@ int main(int argc, char *argv[])
       NodeAgent *imAgent = (NodeAgent *)n[indV];
       imAgent->draw(im);
     }
-
+/*
     if (cimp == 's' || pixelExplored > (int)(im.getNbCol() * im.getNbRow()))
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
@@ -207,30 +210,32 @@ int main(int argc, char *argv[])
       preprocessed.saveImage(nomSauvegarde);
       indSauvegardeIm++;
     }
-
-    if (cimr == 's' || pixelExplored > (int)(im.getNbCol() * im.getNbRow()))
+*/
+    int seed = rand() % 100000;
+    if (cimr == 's' || pixelExplored >= (int)(im.getNbCol() * im.getNbRow()))
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
                "Resultats/%s_Resultat_%d.ppm",
-               file, indSauvegardeImResultat);
+               file, seed);
       resultat.saveImage(nomSauvegarde);
       indSauvegardeImResultat++;
     }
 
-    if (cims == 's' || pixelExplored > (int)(im.getNbCol() * im.getNbRow()))
+    if (cims == 's' || pixelExplored >= (int)(im.getNbCol() * im.getNbRow()))
     {
       snprintf(nomSauvegarde, sizeof(nomSauvegarde),
                "Resultats/%s_Superposed_%d.ppm",
-               file, indSauvegardeImSuperposed);
+               file, seed);
       superposed.saveImage(nomSauvegarde);
       indSauvegardeImSuperposed++;
     }
 
-    if (cimr == 'p' || cimp == 'p' || cims == 'p')
+    if (cimr == 'p' || cims == 'p')
     {
+      cout << pixelExplored << "/" << (im.getNbCol() * im.getNbRow()) << endl;
       cout << float(pixelExplored * 100 / (im.getNbCol() * im.getNbRow())) << "% of the image explored" << endl;
     }
-    if (cimr == 'q' || cimp == 'q' || cims == 'q' || pixelExplored > (int)(im.getNbCol() * im.getNbRow()))
+    if (cimr == 'q' || cims == 'q' || pixelExplored >= (int)(im.getNbCol() * im.getNbRow()))
     {
       cout << float(pixelExplored * 100 / (im.getNbCol() * im.getNbRow())) << "% of the image explored" << endl;
       break;

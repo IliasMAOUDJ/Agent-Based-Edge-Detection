@@ -64,7 +64,7 @@ void NodeAgent::live(double dt)
 	string prefixe   = "["+agentName+"]";
 
 	Agent* bestEmitter = NULL;
-	float bestDist = 5;
+	float bestDist = 5000;
 	bool firstTime = true;
 	size_t bestRow = 0;
 	size_t bestCol = 0;
@@ -83,7 +83,7 @@ void NodeAgent::live(double dt)
 		if (message->getResponse()) {
 			receive_response = true;
 			float d = (float)(((message->getRow()-_row)*(message->getRow()-_row)) + (float)((message->getCol()-_col)*(message->getCol()-_col)));
-			if (d < 25) {
+			if (d < 25 && d > 9) {
 				if (firstTime) {
 					firstTime = false;
 					bestDist = d;
@@ -91,7 +91,7 @@ void NodeAgent::live(double dt)
 					bestCol = message->getCol();
 					bestEmitter = message->getEmitter();
 				}
-				if (d < bestDist) {
+				if (d < bestDist && bestDist > 9) {
 
 					bestDist = d;
 					bestRow = message->getRow();
@@ -114,7 +114,7 @@ void NodeAgent::live(double dt)
 			//cout << dist << endl;
 			//cout << "=====================================" << endl;
 
-			if (dist < 25) {
+			if (dist < 25 && dist > 9) {
 				/*cout << prefixe << " => I reply to " << emitterName
 			              << " with value "    << _row
 			              << " and " << _col << endl;*/
