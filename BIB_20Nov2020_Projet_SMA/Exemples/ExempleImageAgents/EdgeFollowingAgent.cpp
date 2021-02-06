@@ -59,7 +59,7 @@ void EdgeFollowingAgent::live(double dt)
     getNewPos(_row, _col);
     if (_sys->explored[_row][_col] == 255)
     {
-		new NodeAgent(_sys, _row, _col);
+		//new NodeAgent(_sys, _row, _col);
         delete this;
     }
 }
